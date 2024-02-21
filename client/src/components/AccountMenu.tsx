@@ -29,10 +29,10 @@ const AccountMenu = () => {
 
   const logoutHandler = async () => {
     try {
-      await logoutApiCall()
       dispatch(logOut())
       removeToken()
       navigate("/", { replace: true })
+      await logoutApiCall()
     } catch (err) {
       console.error(err)
     }
