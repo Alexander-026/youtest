@@ -12,17 +12,21 @@ import Users from "./pages/admin/Users"
 import PrivateRouter from "./components/PrivateRouter"
 import Settings from "./pages/User/Settings"
 import Profile from "./pages/User/Profile"
+import WordGeneratorPage from "./pages/WordGeneratorPage/WordGeneratorPage"
+import SettingsPair from "./pages/SettingsPairPage/SettingsPair"
 const App = () => {
   const root = createBrowserRouter(
     createRoutesFromElements(
       <Route path="/" element={<Layout />}>
-        <Route index path=""  element={<>Home</>} />
+        <Route index path="" element={<>Home</>} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
         <Route path="" element={<PrivateRouter />}>
           <Route path="/profile" element={<Profile />} />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/generator" element={<WordGeneratorPage />} />
+          <Route path="/generator/:id" element={<SettingsPair />} />
         </Route>
 
         <Route path="/admin" element={<AdminRouter />}>

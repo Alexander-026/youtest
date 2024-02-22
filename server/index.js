@@ -10,13 +10,14 @@ const port = process.env.PORT || 2626;
 import connectDB from "./config/db.js";
 import userRoutes from "./routes/userRoutes.js";
 import uploadRoutes from "./routes/uploadRoutes.js";
+import wordPairsRoutes from "./routes/wordPairCardRouter.js"
 
 const app = express();
 connectDB();
 app.use(errorMiddleware);
 
-const allowedOrigins = [process.env.CLIENT_ORIGIN];
-// const allowedOrigins = [process.env.HOST_ORIGIN];
+// const allowedOrigins = [process.env.CLIENT_ORIGIN];
+const allowedOrigins = [process.env.HOST_ORIGIN];
 
 const corsOptions = {
   origin: (origin, callback) => {
@@ -37,6 +38,7 @@ app.use(cookieParser());
 
 app.use("/api/users", userRoutes);
 app.use("/api/upload", uploadRoutes);
+app.use("/api/word-pairs", wordPairsRoutes)
 
 
 app.listen(port, () => {

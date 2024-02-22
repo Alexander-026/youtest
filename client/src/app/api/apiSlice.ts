@@ -4,9 +4,10 @@ import type { User } from "../../types/user"
 import { userSlice } from "../../features/user/userSlice"
 
 const baseQuery = fetchBaseQuery({
-  baseUrl: import.meta.env.VITE_BASE_URL,
-  // baseUrl: import.meta.env.VITE_LOCAL_URL,
+  // baseUrl: import.meta.env.VITE_BASE_URL,
+  baseUrl: import.meta.env.VITE_LOCAL_URL,
   credentials: "include",
+  
   prepareHeaders: headers => {
     const token = localStorage.getItem("accessToken")
     if (token) {
@@ -62,5 +63,6 @@ const baseQueryWithReauth = async (
 
 export const apiSlice = createApi({
   baseQuery: baseQueryWithReauth,
+  tagTypes: ["wordPairs"],
   endpoints: () => ({}),
 })
