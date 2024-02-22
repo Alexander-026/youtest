@@ -1,5 +1,5 @@
 import type { CaseReducer } from "@reduxjs/toolkit"
-import type { IGeneratorWordState, Pair, PiecesArrPars } from "../generatorWordTypes"
+import type { IGeneratorWordState, Pair, PiecesArrPars } from "../../../types/wordPairs"
 import { shuffle } from "../../../utils/shuffle"
 import { makePieces } from "../../../utils/makePieces"
 

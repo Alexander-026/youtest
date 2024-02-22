@@ -1,4 +1,4 @@
-import { Pair } from "../features/generatorWord/generatorWordTypes"
+import type { Pair } from "../types/wordPairs"
 
 export default function filterArray(arr: Pair[]): {
   filtered: Pair[]

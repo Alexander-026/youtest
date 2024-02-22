@@ -1,8 +1,5 @@
 import { v4 as uuid } from "uuid"
-import type {
-  Pair,
-  PiecesArrPars,
-} from "../features/generatorWord/generatorWordTypes"
+import type { Pair, PiecesArrPars } from "../types/wordPairs"
 
 /**
  * Function to distribute pairs into pieces without duplicates.
@@ -34,7 +31,7 @@ export const makePieces = (
 
     // Check if the pair is already present in other subarrays
     for (let i = 0; i < result.length; i++) {
-      const hasPair = result[i].pairs.find((item) => item.id === p.id)
+      const hasPair = result[i].pairs.find(item => item.id === p.id)
 
       // If not present and the subarray is not full, add the pair
       if (!hasPair && result[i].pairs.length < piese) {

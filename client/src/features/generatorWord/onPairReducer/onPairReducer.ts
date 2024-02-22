@@ -2,7 +2,7 @@ import type { CaseReducer, PayloadAction } from "@reduxjs/toolkit"
 import { initTestParams } from "../generatorWordSlice"
 import fixArray from "../../../utils/fixArray"
 import { divideIntoPieces } from "../../../utils/makeMarks"
-import type { IGeneratorWordState, WordPairCard } from "../generatorWordTypes"
+import type { IGeneratorWordState, WordPairCard } from "../../../types/wordPairs"
 
 // Reducer function for handling onPair action
 const onPair: CaseReducer<

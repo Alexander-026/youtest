@@ -1,5 +1,5 @@
 import type { CaseReducer } from "@reduxjs/toolkit"
-import type { IGeneratorWordState } from "../generatorWordTypes"
+import type { IGeneratorWordState } from "../../../types/wordPairs"
 import { divideIntoPieces } from "../../../utils/makeMarks"
 
 const resetConfiguration: CaseReducer<IGeneratorWordState> = (state) => {

@@ -1,7 +1,7 @@
 import type {
   Pair,
   PiecesArrPars,
-} from "../features/generatorWord/generatorWordTypes"
+} from "../types/wordPairs"
 import { makePieces } from "./makePieces"
 
 describe("makePieces function", () => {

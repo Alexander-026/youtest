@@ -1,4 +1,4 @@
-import type { Pair } from "../features/generatorWord/generatorWordTypes"
+import type { Pair } from "../types/wordPairs"
 
 const sumLearnedWords = (pairs: Pair[]): number => {
   let sum = 0

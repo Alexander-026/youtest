@@ -1,4 +1,4 @@
-import type { WordPairCardPractic } from "./generatorWordTypes"
+import type { WordPairCardPractic } from "../../types/wordPairs"
 import testWordPairCardData from "./testWordPairCardData"
 
 const testWordPairCardPracticData: WordPairCardPractic = {

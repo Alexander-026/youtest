@@ -1,5 +1,5 @@
 import type { CaseReducer, PayloadAction } from "@reduxjs/toolkit"
-import type { IGeneratorWordState } from "../generatorWordTypes"
+import type { IGeneratorWordState } from "../../../types/wordPairs"
 
 const deteleWord: CaseReducer<IGeneratorWordState, PayloadAction<string>> = (
   state,

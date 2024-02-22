@@ -1,4 +1,4 @@
-import type { Pair } from "../features/generatorWord/generatorWordTypes"
+import type { Pair } from "../types/wordPairs"
 
 function getRandomNumber(max: number): number {
   return Math.floor(Math.random() * (max - 0 + 1)) + 0

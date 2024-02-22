@@ -1,5 +1,5 @@
 import type { CaseReducer } from "@reduxjs/toolkit"
-import type { IGeneratorWordState, Pair } from "../generatorWordTypes"
+import type { IGeneratorWordState, Pair } from "../../../types/wordPairs"
 import { shuffle } from "../../../utils/shuffle"
 const newLevel = new Audio("/success-next.mp3")
 

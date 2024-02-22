@@ -2,7 +2,7 @@ import generatorReducer, {
   selectWordAction,
   initialStateGeneratorWord,
 } from "../generatorWordSlice"
-import type { IGeneratorWordState } from "../generatorWordTypes"
+import type { IGeneratorWordState } from "../../../types/wordPairs"
 
 export const select = (
   keyName: "foreign" | "native",

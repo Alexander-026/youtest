@@ -1,5 +1,6 @@
 import { Backdrop, CircularProgress } from "@mui/material"
-import React, { ReactNode } from "react"
+import type { ReactNode } from "react";
+import type React from "react"
 
 type LoaderWrapperType = {
   loading: boolean

@@ -15,7 +15,7 @@ import { MdDelete } from "react-icons/md"
 import type React from "react"
 import { useCallback, useEffect, useState } from "react"
 import { useAppSelector, useAppDispatch } from "../../app/hooks"
-import type { Pair, WordPairCard } from "../../types/wordPairs"
+import type { Pair } from "../../types/wordPairs"
 import { areArraysEqual } from "../../utils/areArraysEqual"
 import filterArray from "../../utils/filterArray"
 import { generatorWordsSlice } from "../../features/generatorWord/generatorWordSlice"
@@ -43,16 +43,6 @@ const ListWords: React.FC<{ pair: Pair[] }> = ({ pair }) => {
 
   const [update, { isLoading: loading, isError: error, data: updatedPair }] =
     useUpdateWordPairsMutation()
-
-  // Mutation for updating pairs of words
-  // const [update, { data: updatedPair }] = useMutation<
-  //   { updatePairsWord: WordPairCard },
-  //   { updatePairsWordInput: { id: string; pairsWord: Pair[] } }
-  // >(UPDATE_WORDS_PAIR, {
-  //   onCompleted(data) {
-  //     dispatch(onPair(data.updatePairsWord))
-  //   },
-  // })
 
   // Function to trigger the update mutation
   const onUpdate = async () => {

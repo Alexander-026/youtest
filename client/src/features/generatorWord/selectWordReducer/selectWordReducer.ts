@@ -1,5 +1,5 @@
 import type { CaseReducer, PayloadAction } from "@reduxjs/toolkit"
-import type { IGeneratorWordState } from "../generatorWordTypes"
+import type { IGeneratorWordState } from "../../../types/wordPairs"
 import checkSelectedWords from "../checkSelectedWordsReducer/checkSelectedWordsReducer"
 import checkWordsID from "../../../utils/checkWordsID"
 const wrongAnswer: HTMLAudioElement = new Audio("/wrong-answer.mp3")

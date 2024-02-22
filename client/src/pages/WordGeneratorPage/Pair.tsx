@@ -1,4 +1,4 @@
-import type { WordPairCard } from "../../features/generatorWord/generatorWordTypes"
+import type { WordPairCard } from "../../types/wordPairs"
 import { MdFiberNew } from "react-icons/md"
 import { Link } from "react-router-dom"
 import type { SxProps } from "@mui/material"
