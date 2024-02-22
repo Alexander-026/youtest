@@ -1,7 +1,7 @@
 import type { WordPairCard } from "./generatorWordTypes"
 
 const defaultWordPairCardData: WordPairCard = {
-  _id: "1",
+  id: "1",
   idUser: "user123",
   title: "Vocabulary Set 1",
   visited: false,
