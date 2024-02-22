@@ -1,6 +1,6 @@
 import type { CaseReducer } from "@reduxjs/toolkit"
 import checkWordsID from "../../../utils/checkWordsID"
-import type { IGeneratorWordState, Pair } from "../generatorWordTypes"
+import type { IGeneratorWordState, Pair } from "../../../types/wordPairs"
 
 const checkSelectedWords: CaseReducer<IGeneratorWordState> = (state) => {
   const { foreignId, nativeId, hasIds } = checkWordsID(state)

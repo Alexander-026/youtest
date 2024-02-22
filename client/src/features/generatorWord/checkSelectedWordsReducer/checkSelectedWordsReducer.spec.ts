@@ -2,7 +2,7 @@ import { stateWithStartedTest } from "./../startTestReducer/startTestReducer.spe
 import generatorReducer, {
   checkSelectedWordsAction,
 } from "../generatorWordSlice"
-import type { IGeneratorWordState, Pair } from "../generatorWordTypes"
+import type { IGeneratorWordState, Pair } from "../../../types/wordPairs"
 
 interface TestCheckKeysParams {
   foreignKey: string

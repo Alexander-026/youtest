@@ -1,5 +1,5 @@
 import type { CaseReducer } from "@reduxjs/toolkit"
-import type { IGeneratorWordState, Pair } from "../generatorWordTypes"
+import type { IGeneratorWordState, Pair } from "../../../types/wordPairs"
 import { v4 as uuid } from "uuid"
 
 // Case reducer for adding a new pair to the wordPairCardPractic state

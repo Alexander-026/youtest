@@ -1,4 +1,4 @@
-import type { IGeneratorWordState } from "../features/generatorWord/generatorWordTypes"
+import type { IGeneratorWordState } from "../types/wordPairs"
 
 type ResultIds = {
   foreignId: string
