@@ -1,4 +1,4 @@
-import type { WordPairCard } from "./generatorWordTypes"
+import type { WordPairCard } from "../../types/wordPairs"
 
 const defaultWordPairCardData: WordPairCard = {
   id: "1",
