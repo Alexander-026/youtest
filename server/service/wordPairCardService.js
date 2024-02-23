@@ -36,11 +36,10 @@ const update = async (id, pairsWord) => {
   return newPairWords;
 };
 
-
 const detelePairs = async (id) => {
   const deleted = await WordPairCard.findByIdAndDelete(id);
   return deleted;
-}
+};
 
 const getAll = async (id) => {
   const result = await WordPairCard.find({ idUser: id });
@@ -50,4 +49,17 @@ const getAll = async (id) => {
   return cards;
 };
 
-export { create, visit, update, detelePairs, getAll };
+const evaluate = async (id, grade, pairsWord) => {
+  const pair = await WordPairCard.findByIdAndUpdate(
+    id,
+    {
+      $set: { lastResult: grade, pairsWord },
+    },
+    { returnDocument: "after" }
+  );
+  const newPairWords = wordPairsDto(pair);
+
+  return newPairWords;
+};
+
+export { create, visit, update, detelePairs, evaluate, getAll };

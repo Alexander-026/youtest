@@ -1,4 +1,8 @@
-import type { WordPairCard, InputPairs, Pair } from "../../types/wordPairs"
+import type {
+  WordPairCard,
+  InputPairs,
+  GradingInput,
+} from "../../types/wordPairs"
 import { apiSlice } from "./apiSlice"
 
 export const wordPairsApiSlice = apiSlice.injectEndpoints({
@@ -19,9 +23,20 @@ export const wordPairsApiSlice = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ["wordPairs"],
     }),
-    updateWordPairs: builder.mutation<WordPairCard, { id: string, pairsWord: Pair[] }>({
+    updateWordPairs: builder.mutation<
+      WordPairCard,
+      Omit<GradingInput, "grade">
+    >({
       query: data => ({
         url: `${import.meta.env.VITE_WORD_PAIRS_URL}/update`,
+        method: "PUT",
+        body: data,
+      }),
+      invalidatesTags: ["wordPairs"],
+    }),
+    evaluateTest: builder.mutation<WordPairCard, GradingInput>({
+      query: data => ({
+        url: `${import.meta.env.VITE_WORD_PAIRS_URL}/evaluate`,
         method: "PUT",
         body: data,
       }),
@@ -48,6 +63,7 @@ export const {
   useCreateWordPairsMutation,
   useVisitWordPairsMutation,
   useUpdateWordPairsMutation,
+  useEvaluateTestMutation,
   useDeleteWordPairsMutation,
   useGetWordPairsQuery,
 } = wordPairsApiSlice

@@ -5,6 +5,7 @@ import {
   getAll,
   update,
   detelePairs,
+  evaluate,
   visit,
 } from "../service/wordPairCardService.js";
 
@@ -47,6 +48,17 @@ const deleteWordPairs = async (req, res, next) => {
   }
 };
 
+const evaluateTest = async (req, res, next) => {
+  try {
+    const { id, grade, pairsWord } = req.body;
+    const evaluatedTest = await evaluate(id, grade, pairsWord);
+
+    return res.status(200).json(evaluatedTest);
+  } catch (error) {
+    next(error);
+  }
+};
+
 const getAllWordPars = async (req, res, next) => {
   try {
     const wordCards = await getAll(req.params.id);
@@ -61,5 +73,6 @@ export {
   visitWordPairs,
   updateWordPairs,
   deleteWordPairs,
+  evaluateTest,
   getAllWordPars,
 };

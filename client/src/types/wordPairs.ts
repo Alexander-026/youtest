@@ -64,3 +64,9 @@ export type InputPairs = {
   title: string
   pairsWord: Pair[]
 }
+
+export type GradingInput = {
+  id: string
+  grade: string
+  pairsWord: Pair[]
+}
