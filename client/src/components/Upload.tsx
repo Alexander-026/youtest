@@ -48,25 +48,24 @@ type UploadTypes = {
 }
 
 const Upload: React.FC<UploadTypes> = ({ setFormData, setValue, value }) => {
-  // const [image, setImage] = useState<string>("")
   const [fileName, setFileName] = useState<string>("")
 
   const uploadFileHandler = (e: any) => {
     if (e.target.files[0]) {
       setFileName(e.target.files[0].name)
-      const formData = new FormData()
-      formData.append("image", e.target.files[0])
-      setFormData(formData)
-      setValue("image", e.target.files[0].name, { shouldDirty: true })
+      // const formData = new FormData()
+      // formData.append("image", e.target.files[0])
+      // setFormData(formData)
     }
 
     if (e.target.files) {
-      // setImage(URL.createObjectURL(e.target.files[0]))
       setValue("image", URL.createObjectURL(e.target.files[0]), {
         shouldDirty: true,
       })
     }
   }
+
+  console.log("valuevaluevalue", value)
   return (
     <>
       {value ? (
@@ -103,9 +102,9 @@ const Upload: React.FC<UploadTypes> = ({ setFormData, setValue, value }) => {
             <Button
               onClick={() => {
                 setFileName("")
-                // setImage("")
                 setFormData(null)
                 setValue("image", "", { shouldDirty: true })
+                // URL.revokeObjectURL(value)
               }}
             >
               <MdOutlineDeleteOutline color="white" size={20} />

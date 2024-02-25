@@ -77,11 +77,11 @@ const Profile = () => {
   const onSubmit: SubmitHandler<UpdateUserForm> = async e => {
     const { repeatOldPassword, oldPassword, newPassword, ...updatedData } = e
     try {
-      if (user && user.image && !e.image) {
-        await removeImg({ filePath: `/public/${user.image}` })
-      }
-      const res = formData ? await upload(formData).unwrap() : ""
-      updatedData.image = formData ? res.image.split("\\").slice(-1)[0] : ""
+      // if (user && user.image && !e.image) {
+      //   await removeImg({ filePath: `/public/${user.image}` })
+      // }
+      // const res = formData ? await upload(formData).unwrap() : ""
+      // updatedData.image = formData ? res.image.split("\\").slice(-1)[0] : ""
       const updatedUser = await update({
         ...updatedData,
         oldPassword: oldPassword || "",
@@ -111,7 +111,6 @@ const Profile = () => {
     }
   }
 
-  console.log("formData", getValues().image)
 
   const isLoading = updateLoading || removeLoading
   const error = updateError || removeError

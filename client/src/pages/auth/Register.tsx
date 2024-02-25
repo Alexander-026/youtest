@@ -22,19 +22,15 @@ import { MdVisibilityOff } from "react-icons/md"
 import dayjs from "dayjs"
 import {
   useRegisterMutation,
-  // useUploadUserImageMutation,
 } from "../../app/api/usersApiSlice"
 import { useAppDispatch } from "../../app/hooks"
 import useLocalStorage from "../../hooks/useLocalStorage"
 import { userSlice } from "../../features/user/userSlice"
-import Upload from "../../components/Upload"
 
 const Register = () => {
   const [visibility, setVisibility] = useState<boolean>(false)
-  // const [formData, setFormData] = useState<FormData | null>(null)
 
   const [register, { isLoading, error }] = useRegisterMutation()
-  // const [upload] = useUploadUserImageMutation()
   const navigate = useNavigate()
   const dispath = useAppDispatch()
   const { onUser } = userSlice.actions
@@ -45,7 +41,6 @@ const Register = () => {
     control,
     handleSubmit,
     setValue,
-    getValues,
     reset,
     formState: { errors, isValid, isDirty },
   } = useForm<RegisterUser>({
@@ -64,8 +59,6 @@ const Register = () => {
   // Form submit event handler
   const onSubmit: SubmitHandler<RegisterUser> = async e => {
     try {
-      // const res = await upload(formData).unwrap()
-      // e.image = res.image.split("\\").slice(-1)[0]
       const registeredUser = await register(e).unwrap()
       dispath(onUser(registeredUser.user))
       setToken(registeredUser.accessToken)
@@ -111,8 +104,6 @@ const Register = () => {
             {error && (
               <Alert severity="error">{(error as any).data.message}</Alert>
             )}
-
-            {/* <Upload value={getValues().image} setFormData={setFormData} setValue={setValue} /> */}
 
             <Controller
               name="firstName"
