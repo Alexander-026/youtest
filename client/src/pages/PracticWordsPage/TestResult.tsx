@@ -61,17 +61,17 @@ const TestResult = () => {
         >
           {/* Typography component for displaying result title */}
           <Typography variant="h5" textAlign="center">
-            Result
+            Result 
           </Typography>
           {/* Typography components for displaying test information */}
           <Typography variant="h6" textAlign="left">
             totalMistakes: {totalMistakes}
           </Typography>
           <Typography variant="h6" textAlign="left">
-            {/* Percentage: {data?.passedTest.lastResult}% */}
+            Percentage: {data?.lastResult}%
           </Typography>
           {/* Link to navigate back to the generator page */}
-          <Link to="/word-generator" replace>
+          <Link to="/generator" replace>
             <Button
               onClick={() => dispatch(onPair(null))}
               variant="contained"

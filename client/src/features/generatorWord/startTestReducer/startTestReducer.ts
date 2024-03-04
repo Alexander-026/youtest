@@ -19,6 +19,7 @@ const startTest: CaseReducer<IGeneratorWordState> = (state) => {
     divideIntoPieces,
   )
 
+
   // Shuffle the pieces and assign them to state.piesesArrPairs
   state.piecesArrPairs = shuffle<PiecesArrPars>(piecesPairs)
 

@@ -15,12 +15,13 @@ export const makePieces = (
 ): PiecesArrPars[] => {
   // Calculate the expected length of the resulting array
   const resLength = Math.floor(quantity / piese)
-
   // Initialize the resulting array with unique IDs and empty pairs array
   const result: PiecesArrPars[] = Array.from({ length: resLength }, () => ({
     id: uuid(),
     pairs: [],
   }))
+
+  
 
   // Trim the pairs array to the specified quantity
   const trimmed = pairs.slice(0, quantity)
@@ -42,10 +43,10 @@ export const makePieces = (
     }
 
     // If the pair is not added to other subarrays, add it to the first available one
+    // && result[index % resLength].pairs.length < piese
     if (!added && piese !== pairs.length) {
       result[index % resLength].pairs.push(p)
     }
   })
-
   return result
 }

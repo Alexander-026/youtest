@@ -8,8 +8,8 @@ import {
   Typography,
 } from "@mui/material"
 import { useAppDispatch, useAppSelector } from "../../app/hooks"
-import type {  WordPairCardPractic } from "../../types/wordPairs"
-import { useNavigate } from "react-router-dom"
+import type { WordPairCardPractic } from "../../types/wordPairs"
+import { useNavigate, useBlocker } from "react-router-dom"
 import sumLearnedWords from "../../utils/sumLearnedWords"
 import LoaderWrapper from "../../components/LoaderWrapper"
 import ConfirmWindow from "../../components/ConfirmWindow"
@@ -48,8 +48,6 @@ function deepEqual(obj1: ConfigParams, obj2: ConfigParams): boolean {
   return true
 }
 
-
-
 type ConfigParams = IKeyString &
   Pick<
     WordPairCardPractic,
@@ -63,7 +61,7 @@ const ConfigurationWordTest = () => {
   )
   const [deteteWordPairs] = useDeleteWordPairsMutation()
 
-  const { configurationPair, startTest, resetConfiguration } =
+  const { configurationPair, startTest, resetConfiguration, onPair } =
     generatorWordsSlice.actions
   const dispatch = useAppDispatch()
   const [showDelete, setShowDelete] = useState<boolean>(false)
@@ -74,6 +72,17 @@ const ConfigurationWordTest = () => {
     quantityForPractice: wordPairCardPractic!.quantityForPractice,
   }
 
+  useBlocker(
+    ({ currentLocation, nextLocation }) => {
+      if (nextLocation.pathname.includes("/practic/")) {
+        return false
+      }
+      dispatch(onPair(null))
+      return false
+    },
+    // currentLocation.pathname !== nextLocation.pathname,
+  )
+
   const memoisedConfigParams = useMemo<ConfigParams>(
     () => params,
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -81,6 +90,45 @@ const ConfigurationWordTest = () => {
   )
 
   const paramasChanged = deepEqual(memoisedConfigParams, params)
+
+  const myArr = ["1", "1", "2", "2", "3", "3", "4", "4", "5", "6"]
+
+  type Res = {
+    id: string
+    pairs: string[]
+  }
+  const result: Res[] = [
+    {
+      id: "1",
+      pairs: [],
+    },
+    {
+      id: "2",
+      pairs: [],
+    },
+  ]
+
+  let index = 0
+
+  while (myArr.length > 0) {
+    const item = myArr.shift() as string
+
+    if (!result[index].pairs.includes(item) && result[index].pairs.length < 5) {
+      result[index].pairs.push(item)
+      if(result[index].pairs.length === 5) {
+        index++
+      }
+    } 
+
+    console.log("index", index)
+
+    if (myArr.length === 0 || index === result.length - 1) {
+      break
+    }
+  }
+
+  console.log("result", result)
+  console.log("after array", myArr)
 
   return (
     // LoaderWrapper for handling loading state and displaying data
@@ -150,7 +198,7 @@ const ConfigurationWordTest = () => {
             valueLabelDisplay="auto"
             step={5}
             marks
-            min={10}
+            min={5}
             max={wordPairCardPractic!.fixedPairsWord.length}
           />
           <Typography variant="body1" textAlign="start">

@@ -9,7 +9,7 @@ import {
   Typography,
   Zoom,
 } from "@mui/material"
-import { IoIosNotifications } from "react-icons/io";
+import { IoIosNotifications } from "react-icons/io"
 import { useCallback, useEffect, useRef } from "react"
 import { useAppDispatch, useAppSelector } from "../../app/hooks"
 import { generatorWordsSlice } from "../../features/generatorWord/generatorWordSlice"
@@ -17,7 +17,7 @@ import WordChoiceStack from "./WordChoiceStack"
 
 // TestBody component handles the main body of the vocabulary test, including word selection stacks and progress display.
 const TestBody = () => {
-  const { testParams } = useAppSelector((state) => state["generator-pare-words"])
+  const { testParams } = useAppSelector(state => state["generator-pare-words"])
 
   const {
     progress,
@@ -66,9 +66,7 @@ const TestBody = () => {
     onNext()
   }, [onNext])
 
-  const foreignId = selectedForeignKey
-    ? selectedForeignKey.split(" ")[0]
-    : null
+  const foreignId = selectedForeignKey ? selectedForeignKey.split(" ")[0] : null
 
   const nativeId = selectedNativeKey ? selectedNativeKey.split(" ")[0] : null
 
@@ -110,8 +108,9 @@ const TestBody = () => {
                 placement="top"
                 TransitionComponent={Zoom}
               >
-                {/* <NotificationImportantIcon fontSize="small" /> */}
-                <IoIosNotifications/>
+                <span>
+                  <IoIosNotifications />
+                </span>
               </Tooltip>
             </Badge>
             <Box sx={{ my: "1rem", px: "1rem" }}>
