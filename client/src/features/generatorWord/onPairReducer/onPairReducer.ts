@@ -2,7 +2,12 @@ import type { CaseReducer, PayloadAction } from "@reduxjs/toolkit"
 import { initTestParams } from "../generatorWordSlice"
 import fixArray from "../../../utils/fixArray"
 import { divideIntoPieces } from "../../../utils/makeMarks"
-import type { IGeneratorWordState, WordPairCard } from "../../../types/wordPairs"
+import type {
+  IGeneratorWordState,
+  Pair,
+  WordPairCard,
+} from "../../../types/wordPairs"
+import { shuffle } from "../../../utils/shuffle"
 
 // Reducer function for handling onPair action
 const onPair: CaseReducer<
@@ -10,13 +15,12 @@ const onPair: CaseReducer<
   PayloadAction<WordPairCard | null>
 > = (state, action) => {
   if (action.payload) {
-    // Clone the payload and remove __typename
     const pair = action.payload
 
-    // Remove __typename from each pair in pairsWord array
+    const shuffledPairsWord = shuffle<Pair>(pair.pairsWord)
 
     // Fix the array length and set the state accordingly
-    const fixedArr = fixArray(pair.pairsWord)
+    const fixedArr = fixArray(shuffledPairsWord)
     state.wordPairCardPractic = {
       ...pair,
       quantityForPractice: fixedArr.length,

@@ -20,33 +20,27 @@ export const makePieces = (
     id: uuid(),
     pairs: [],
   }))
-
-  
-
   // Trim the pairs array to the specified quantity
-  const trimmed = pairs.slice(0, quantity)
 
-  // Iterate through the trimmed pairs array
-  trimmed.forEach((p, index) => {
-    let added = false
+  const trimmed = [...pairs]
 
-    // Check if the pair is already present in other subarrays
-    for (let i = 0; i < result.length; i++) {
-      const hasPair = result[i].pairs.find(item => item.id === p.id)
+  let currentResIndex = 0
+  let currentItemIndex = 0
 
-      // If not present and the subarray is not full, add the pair
-      if (!hasPair && result[i].pairs.length < piese) {
-        result[i].pairs.push(p)
-        added = true
-        break
+  while (trimmed.length > 0) {
+    const pair = trimmed[currentItemIndex]
+    if (!result[currentResIndex].pairs.includes(pair)) {
+      if (result[currentResIndex].pairs.length < piese) {
+        result[currentResIndex].pairs.push(pair)
+        trimmed.splice(currentItemIndex, 1)
+      } else {
+        currentResIndex++
+        currentItemIndex = 0
       }
+    } else {
+      currentItemIndex++
     }
+  }
 
-    // If the pair is not added to other subarrays, add it to the first available one
-    // && result[index % resLength].pairs.length < piese
-    if (!added && piese !== pairs.length) {
-      result[index % resLength].pairs.push(p)
-    }
-  })
   return result
 }

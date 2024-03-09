@@ -1,4 +1,5 @@
 import type {
+  DecodedUser,
   LoginUser,
   RegisterUser,
   UpdateUser,
@@ -54,7 +55,7 @@ export const userApiSlice = apiSlice.injectEndpoints({
         method: "POST",
       }),
     }),
-    getUsers: builder.query<User[], void>({
+    getUsers: builder.query<DecodedUser[], void>({
       query: () => ({
         url: import.meta.env.VITE_USERS_URL,
       }),

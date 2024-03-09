@@ -6,16 +6,10 @@ import { useGetWordPairsQuery } from "../../app/api/wordPairsApiSlice"
 
 // Component representing the Generator Page
 const WordGeneratorPage = () => {
-  const { user } = useAppSelector((state) => state.user)
+  const { user } = useAppSelector(state => state.user)
 
-  const {data, isLoading} = useGetWordPairsQuery(user?.id || "")
+  const { data, isLoading } = useGetWordPairsQuery(user?.id || "")
   // Use the useQuery hook from Apollo Client to fetch all word pairs
-
-
-  console.log("words", data)
-
-
- 
 
   return (
     <Box
@@ -44,9 +38,7 @@ const WordGeneratorPage = () => {
         sx={{ width: "100%", minHeight: "10rem" }}
       >
         {/* Map through the fetched pairs and display each pair using the Pair component */}
-        {data?.map((pair) => (
-          <Pair key={pair.id} pair={pair} />
-        ))}
+        {data?.map(pair => <Pair key={pair.id} pair={pair} />)}
 
         {/* Display a loading spinner while data is being fetched */}
         {isLoading && <CircularProgress color="primary" />}

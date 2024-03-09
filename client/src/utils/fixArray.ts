@@ -21,7 +21,7 @@ export default function fixArray(pairs: Pair[]): Pair[] {
   if (requiredQuantity > 0) {
     // eslint-disable-next-line no-constant-condition
     while (true) {
-      const randomNumber = getRandomNumber(arrLength - 1)
+      const randomNumber = getRandomNumber(arrLength - 2)
       if (!necessaryIndexes.includes(randomNumber)) {
         necessaryIndexes.push(randomNumber)
         fixedArray.push(pairs[randomNumber])

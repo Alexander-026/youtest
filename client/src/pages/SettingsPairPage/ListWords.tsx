@@ -10,6 +10,7 @@ import {
   Button,
   Typography,
   CardHeader,
+  CircularProgress,
 } from "@mui/material"
 import { MdDelete } from "react-icons/md"
 import type React from "react"
@@ -216,9 +217,9 @@ const ListWords: React.FC<{ pair: Pair[] }> = ({ pair }) => {
           }}
           size="small"
           variant="contained"
-          disabled={!modified}
+          disabled={!modified || loading}
         >
-          Save
+          {loading ? <CircularProgress size={24} color="primary" /> : "Save"}
         </Button>
       </CardActions>
     </Card>

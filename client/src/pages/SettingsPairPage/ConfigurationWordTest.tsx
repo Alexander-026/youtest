@@ -59,7 +59,7 @@ const ConfigurationWordTest = () => {
   const { wordPairCardPractic, piecesArrPairs } = useAppSelector(
     state => state["generator-pare-words"],
   )
-  const [deteteWordPairs] = useDeleteWordPairsMutation()
+  const [deteteWordPairs, {isLoading}] = useDeleteWordPairsMutation()
 
   const { configurationPair, startTest, resetConfiguration, onPair } =
     generatorWordsSlice.actions
@@ -91,49 +91,10 @@ const ConfigurationWordTest = () => {
 
   const paramasChanged = deepEqual(memoisedConfigParams, params)
 
-  const myArr = ["1", "1", "2", "2", "3", "3", "4", "4", "5", "6"]
-
-  type Res = {
-    id: string
-    pairs: string[]
-  }
-  const result: Res[] = [
-    {
-      id: "1",
-      pairs: [],
-    },
-    {
-      id: "2",
-      pairs: [],
-    },
-  ]
-
-  let index = 0
-
-  while (myArr.length > 0) {
-    const item = myArr.shift() as string
-
-    if (!result[index].pairs.includes(item) && result[index].pairs.length < 5) {
-      result[index].pairs.push(item)
-      if(result[index].pairs.length === 5) {
-        index++
-      }
-    } 
-
-    console.log("index", index)
-
-    if (myArr.length === 0 || index === result.length - 1) {
-      break
-    }
-  }
-
-  console.log("result", result)
-  console.log("after array", myArr)
-
   return (
     // LoaderWrapper for handling loading state and displaying data
     <LoaderWrapper
-      loading={false}
+      loading={isLoading}
       data={wordPairCardPractic && !piecesArrPairs.length}
     >
       {/* ConfirmWindow component for confirming deletion */}
