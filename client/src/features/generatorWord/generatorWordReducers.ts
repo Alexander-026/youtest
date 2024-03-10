@@ -10,6 +10,7 @@ import checkSelectedWords from "./checkSelectedWordsReducer/checkSelectedWordsRe
 import nextPage from "./nextPageReducer/nextPageReducer"
 import violated from "./violatedReducer/violatedReducer"
 import resetUpdatePair from "./resetUpdatePair/resetUpdatePair"
+import addManyPairs from "./addManyPairsReducer/addManyPairsReducer"
 
 export {
   configurationPair,
@@ -17,6 +18,7 @@ export {
   updatePair,
   resetUpdatePair,
   addPair,
+  addManyPairs,
   onPair,
   resetConfiguration,
   startTest,

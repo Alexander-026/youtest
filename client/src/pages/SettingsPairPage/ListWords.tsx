@@ -1,28 +1,33 @@
 import {
   Card,
   CardContent,
-  IconButton,
   Stack,
-  TextField,
-  Paper,
-  Box,
   CardActions,
   Button,
+  ButtonGroup,
   Typography,
   CardHeader,
   CircularProgress,
+  Paper,
+  TextField,
 } from "@mui/material"
-import { MdDelete } from "react-icons/md"
 import type React from "react"
-import { useCallback, useEffect, useState } from "react"
+import { v4 as uuid } from "uuid"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import { useAppSelector, useAppDispatch } from "../../app/hooks"
 import type { Pair } from "../../types/wordPairs"
 import { areArraysEqual } from "../../utils/areArraysEqual"
 import filterArray from "../../utils/filterArray"
 import { generatorWordsSlice } from "../../features/generatorWord/generatorWordSlice"
 import { useUpdateWordPairsMutation } from "../../app/api/wordPairsApiSlice"
+import ListWordsItem from "./ListWordsItem"
+import type { SubmitHandler } from "react-hook-form"
+import { Controller, useForm } from "react-hook-form"
+import { yupResolver } from "@hookform/resolvers/yup"
+import { addManySchema } from "../../schema/wordPairsSchema"
+import { IoCloseSharp } from "react-icons/io5"
 
-const minimumQuantityCheck = (
+export const minimumQuantityCheck = (
   pairsWords: Pair[],
 ): { min: boolean; max: boolean } => {
   const words = pairsWords
@@ -34,15 +39,31 @@ const minimumQuantityCheck = (
 
 // ListWords component for managing and displaying pairs of words
 const ListWords: React.FC<{ pair: Pair[] }> = ({ pair }) => {
+  const [showMany, setShowMany] = useState<boolean>(false)
   const [modified, setModified] = useState<boolean>(false)
+  const {
+    control,
+    handleSubmit,
+    reset,
+    watch,
+    formState: { errors, isValid, isDirty },
+  } = useForm<{ pairs: string }>({
+    mode: "all",
+    resolver: yupResolver(addManySchema),
+    defaultValues: {
+      pairs: "",
+    },
+  })
+
+  const watchedFields = watch()
   const { wordPairCardPractic } = useAppSelector(
     state => state["generator-pare-words"],
   )
-  const { updatePair, deteleWord, addPair, onPair, resetUpdatePair } =
+  const { addPair, onPair, resetUpdatePair, addManyPairs } =
     generatorWordsSlice.actions
   const dispatch = useAppDispatch()
 
-  const [update, { isLoading: loading, isError: error, data: updatedPair }] =
+  const [update, { isLoading: loading, isError, data: updatedPair }] =
     useUpdateWordPairsMutation()
 
   // Function to trigger the update mutation
@@ -75,13 +96,50 @@ const ListWords: React.FC<{ pair: Pair[] }> = ({ pair }) => {
     }
   }, [pair, updatedPair, wordPairCardPractic?.pairsWord])
 
+  const pairs = useMemo<Pair[]>(() => {
+    let filteredWords: string[] = []
+    const wordsD = watchedFields
+      .pairs!.split(",")
+      .map(item => item.trim().toLocaleLowerCase())
+      .filter(item => {
+        if (!!item && !filteredWords.includes(item)) {
+          filteredWords.push(item)
+          return true
+        } else {
+          return false
+        }
+      })
+    const paresA = wordsD.map(item =>
+      item.split("-").map(inner => inner.trim()),
+    )
+    const cardPairs: Pair[] = paresA
+      .map(item => {
+        const foreignWord = item[0]
+        const nativeWord = item[1]
+        return {
+          id: uuid(),
+          foreign: foreignWord,
+          native: nativeWord,
+          correctAnswers: 0,
+          mastered: false,
+        }
+      })
+      .filter(p => !!p.foreign && !!p.native)
+    filteredWords = []
+    return cardPairs.length >= 1 ? cardPairs : []
+  }, [watchedFields.pairs])
+
+  const addMany: SubmitHandler<{ pairs: string }> = () => {
+    console.log("pairs", pairs)
+    dispatch(addManyPairs(pairs))
+    reset()
+    setShowMany(false)
+  }
+
   useEffect(() => {
     checkData()
   }, [checkData])
 
-  const minAmount: boolean = minimumQuantityCheck(
-    wordPairCardPractic?.pairsWord || [],
-  ).min
   const maxAmount: boolean = minimumQuantityCheck(
     wordPairCardPractic?.pairsWord || [],
   ).max
@@ -107,76 +165,76 @@ const ListWords: React.FC<{ pair: Pair[] }> = ({ pair }) => {
       <CardContent
         sx={{ height: "20rem", overflowY: "auto", px: "1rem", mb: "0.5rem" }}
       >
-        <Box>
-          {wordPairCardPractic?.pairsWord.map((p, i) => {
-            return (
-              // Paper component for styling each pair
-              <Paper
-                key={p.id + i}
+        <Paper
+          sx={{
+            height: showMany ? "15rem" : "0",
+            transition: "height .06s linear",
+            overflow: "hidden",
+            padding: showMany ? "0.5rem" : "0",
+            marginBottom: showMany ? "0.5rem" : "0",
+          }}
+        >
+          <form style={{height: "100%"}} onSubmit={handleSubmit(addMany)}>
+            <Stack
+              sx={{ height: "100%", position: "relative", pt: "2rem" }}
+              flexBasis={1}
+              justifyContent="space-between"
+            >
+              <Button
+                onClick={() => setShowMany(false)}
+                variant="outlined"
                 sx={{
-                  position: "relative",
-                  padding: "0.5rem",
-                  mb:
-                    wordPairCardPractic?.pairsWord.length === i + 1
-                      ? "0"
-                      : "0.5rem",
+                  position: "absolute",
+                  top: 0,
+                  right: 0,
+                  p: 0,
+                  minWidth: "1rem",
+                  width: "1.2rem",
+                  height: "1.2rem",
                 }}
+                size="small"
               >
-                {/* Stack component for organizing text fields */}
-                <Stack gap={1} direction="row" alignItems="center">
-                  {/* TextField for editing the native language word */}
-                  <Typography variant="body2" textAlign="center" width="3rem">
-                    {i + 1}
-                  </Typography>
+                <IoCloseSharp />
+              </Button>
+              <Controller
+                name="pairs"
+                control={control}
+                render={({ field }) => (
                   <TextField
-                    placeholder="Mutersprache"
-                    size="small"
-                    variant="standard"
-                    value={p.native}
+                    {...field}
+                    multiline
+                    minRows={3}
+                    maxRows={5}
                     fullWidth
-                    onChange={e =>
-                      dispatch(
-                        updatePair({
-                          id: p.id,
-                          field: "native",
-                          value: e.target.value,
-                        }),
-                      )
-                    }
+                    label="Write a couple of words"
+                    error={!!errors.pairs}
+                    helperText={errors.pairs?.message}
                   />
-                  {/* TextField for editing the foreign language word */}
-                  <TextField
-                    placeholder="Fremdsprache"
-                    size="small"
-                    variant="standard"
-                    fullWidth
-                    onChange={e =>
-                      dispatch(
-                        updatePair({
-                          id: p.id,
-                          field: "foreign",
-                          value: e.target.value,
-                        }),
-                      )
-                    }
-                    value={p.foreign}
-                  />
-                  {/* IconButton to delete a pair */}
-                  {!minAmount && (
-                    <IconButton
-                      // sx={{ position: "absolute", top: "0", right: "0" }}
-                      size="small"
-                      onClick={() => dispatch(deteleWord(p.id))}
-                      disabled={minAmount}
-                    >
-                      <MdDelete />
-                    </IconButton>
-                  )}
-                </Stack>
-              </Paper>
-            )
-          })}
-        </Box>
+                )}
+              />
+              <Stack flexDirection="row" justifyContent="space-between">
+                <Button
+                  onClick={() => reset()}
+                  disabled={!isDirty}
+                  size="small"
+                  variant="outlined"
+                >
+                  Reset
+                </Button>
+                <Button
+                  disabled={!isValid}
+                  type="submit"
+                  size="small"
+                  variant="contained"
+                >
+                  Add
+                </Button>
+              </Stack>
+            </Stack>
+          </form>
+        </Paper>
+
+        <ListWordsItem />
       </CardContent>
       {/* CardActions component for displaying action buttons */}
       <CardActions
@@ -188,16 +246,22 @@ const ListWords: React.FC<{ pair: Pair[] }> = ({ pair }) => {
         }}
       >
         {/* Button to add a new pair */}
-        <Button
-          onClick={() => {
-            dispatch(addPair())
-          }}
-          size="small"
+        <ButtonGroup
           variant="contained"
-          disabled={maxAmount}
+          aria-label="Basic button group"
+          size="small"
         >
-          Add Pair
-        </Button>
+          <Button
+            onClick={() => {
+              dispatch(addPair())
+            }}
+            disabled={maxAmount || showMany}
+          >
+            Add One
+          </Button>
+          <Button onClick={() => setShowMany(true)}>Add Many</Button>
+        </ButtonGroup>
+
         {/* Button to reset changes */}
         <Button
           onClick={() => {

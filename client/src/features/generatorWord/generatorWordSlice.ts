@@ -2,6 +2,7 @@ import {
   configurationPair,
   deteleWord,
   addPair,
+  addManyPairs,
   checkSelectedWords,
   nextPage,
   onPair,
@@ -55,6 +56,7 @@ export const generatorWordsSlice = createSlice({
     resetUpdatePair,
     deteleWord,
     addPair,
+    addManyPairs,
   },
 })
 
@@ -70,6 +72,7 @@ export const {
   updatePair: updatePairAction,
   deteleWord: deteleWordAction,
   addPair: addPairAction,
+  addManyPairs: addManyPairsAction,
 } = generatorWordsSlice.actions
 
 export default generatorWordsSlice.reducer
