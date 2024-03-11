@@ -1,8 +1,15 @@
+
+import { fileURLToPath } from 'url';
+import path, { dirname } from 'path';
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import errorMiddleware from "./middlewares/errorMiddleware.js";
+
+const __filename = fileURLToPath(import.meta.url);
+
+const __dirname = dirname(__filename);
 
 dotenv.config();
 const port = process.env.PORT || 2626;
@@ -33,8 +40,9 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 app.use(express.json());
-app.use(express.static('public'))
 app.use(cookieParser());
+// app.use(express.static('public'))
+app.use(express.static(path.join(__dirname, 'public')));
 
 
 app.use("/api/users", userRoutes);

@@ -65,7 +65,9 @@ const Upload: React.FC<UploadTypes> = ({ setFormData, setValue, value }) => {
     }
   }
 
-  console.log("valuevaluevalue", value)
+
+  const isBlob = value ? value.startsWith("blob:") : false
+
   return (
     <>
       {value ? (
@@ -112,7 +114,7 @@ const Upload: React.FC<UploadTypes> = ({ setFormData, setValue, value }) => {
           </Box>
           <Avatar
             alt={fileName}
-            src={`${import.meta.env.VITE_LOCAL_URL}/${value}`}
+            src={isBlob ? value : `${import.meta.env.VITE_LOCAL_URL}/${value}`}
             sx={{ width: "100%", height: "100%" }}
           />
         </Box>
