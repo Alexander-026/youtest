@@ -39,7 +39,7 @@ const MyAvatar: React.FC<MyAvatarTypes> = ({ user }) => {
   return (
     <Avatar
       {...stringAvatar(`${user.firstName} ${user.lastName}`)}
-      src={user.image}
+      src={`${import.meta.env.VITE_LOCAL_URL}/${user.image}`}
     />
   )
 }

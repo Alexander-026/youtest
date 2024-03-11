@@ -77,11 +77,13 @@ const Profile = () => {
   const onSubmit: SubmitHandler<UpdateUserForm> = async e => {
     const { repeatOldPassword, oldPassword, newPassword, ...updatedData } = e
     try {
-      // if (user && user.image && !e.image) {
-      //   await removeImg({ filePath: `/public/${user.image}` })
-      // }
-      // const res = formData ? await upload(formData).unwrap() : ""
-      // updatedData.image = formData ? res.image.split("\\").slice(-1)[0] : ""
+      if (user && user.image && !e.image) {
+        await removeImg({ filePath: `./public/${user.image}` })
+      }
+      const res = formData ? await upload(formData).unwrap() : ""
+      updatedData.image = formData ? res.image.split("\\").slice(-1)[0] : ""
+
+      console.log("updatedData", updatedData)
       const updatedUser = await update({
         ...updatedData,
         oldPassword: oldPassword || "",
@@ -132,13 +134,13 @@ const Profile = () => {
             <Alert severity="error">{(error as any).data.message}</Alert>
           )}
           <Grid width={"100%"} container spacing={2}>
-            {/* <Grid textAlign="center" xs={12}>
+            <Grid textAlign="center" xs={12}>
               <Upload
                 value={getValues().image}
                 setFormData={setFormData}
                 setValue={setValue}
               />
-            </Grid> */}
+            </Grid>
             <Grid md={6} xs={12}>
               <Controller
                 name="firstName"

@@ -53,9 +53,9 @@ const Upload: React.FC<UploadTypes> = ({ setFormData, setValue, value }) => {
   const uploadFileHandler = (e: any) => {
     if (e.target.files[0]) {
       setFileName(e.target.files[0].name)
-      // const formData = new FormData()
-      // formData.append("image", e.target.files[0])
-      // setFormData(formData)
+      const formData = new FormData()
+      formData.append("image", e.target.files[0])
+      setFormData(formData)
     }
 
     if (e.target.files) {
@@ -112,7 +112,7 @@ const Upload: React.FC<UploadTypes> = ({ setFormData, setValue, value }) => {
           </Box>
           <Avatar
             alt={fileName}
-            src={value}
+            src={`${import.meta.env.VITE_LOCAL_URL}/${value}`}
             sx={{ width: "100%", height: "100%" }}
           />
         </Box>
