@@ -85,7 +85,7 @@ const Profile = () => {
       const res = formData ? await upload(formData).unwrap() : ""
       console.log("res.image", res.image.split("/public")[1].replace("/",""))
 
-      updatedData.image = formData ? res.image.split("\\").slice(-1)[0] : ""
+      updatedData.image = formData ? res.image.split("/public")[1].replace("/","") : ""
 
       console.log("updatedData", updatedData)
       const updatedUser = await update({
