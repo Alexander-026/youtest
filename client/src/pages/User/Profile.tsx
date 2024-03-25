@@ -79,7 +79,7 @@ const Profile = () => {
     const { repeatOldPassword, oldPassword, newPassword, ...updatedData } = e
     try {
       if (user && user.image && !e.image) {
-        await removeImg({ filePath: `${import.meta.env.VITE_BASE_URL}/public/${user.image}` })
+        await removeImg({ filePath: `${import.meta.env.VITE_BASE_URL}/${user.image}` })
       }
       console.log("formData", formData)
       const res = formData ? await upload(formData).unwrap() : ""
