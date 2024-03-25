@@ -11,7 +11,6 @@ import {
 import userDto from "../dtos/userDto.js";
 import ApiError from "../exceptions/apiError.js";
 
-
 const registration = async (
   firstName,
   lastName,
@@ -22,9 +21,8 @@ const registration = async (
 ) => {
   const userExists = await User.findOne({ email });
   if (userExists) {
-    throw new ApolloError(
-      `Benutzer mit E-Mail-Adresse ${email} existiert bereits`,
-      process.env.USER_ALREADY_EXISTS
+    throw ApiError.BadRequest(
+      `Benutzer mit E-Mail-Adresse ${email} existiert bereits`
     );
   }
 
@@ -108,7 +106,7 @@ const update = async (user) => {
   userFromData.birthDate = birthDate;
   userFromData.email = email;
   userFromData.image = image;
-  userFromData.password = hashedPassword || userFromData.password
+  userFromData.password = hashedPassword || userFromData.password;
 
   const savedUser = await userFromData.save();
   const newUser = userDto(savedUser);

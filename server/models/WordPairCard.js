@@ -1,7 +1,7 @@
-import { Schema, model } from "mongoose";
+import { Schema, model, ObjectId } from "mongoose";
 
 export const wordPairCard = new Schema({
-  idUser: { type: Schema.Types.ObjectId, ref: "User" },
+  idUser: { type: ObjectId, ref: "User" },
   title: { type: String, require: true },
   visited: { type: Boolean, default: false },
   totalWords: { type: Number, require: true },

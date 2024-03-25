@@ -80,6 +80,7 @@ const Profile = () => {
       if (user && user.image && !e.image) {
         await removeImg({ filePath: `./public/${user.image}` })
       }
+      console.log("formData", formData)
       const res = formData ? await upload(formData).unwrap() : ""
       updatedData.image = formData ? res.image.split("\\").slice(-1)[0] : ""
 
