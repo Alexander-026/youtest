@@ -32,7 +32,7 @@ export const userApiSlice = apiSlice.injectEndpoints({
     }),
     uploadUserImage: builder.mutation({
       query: data => ({
-        url: import.meta.env.VITE_UPLOAD_URL,
+        url: `${import.meta.env.VITE_UPLOAD_URL}/`,
         method: "POST",
         body: data,
       }),
