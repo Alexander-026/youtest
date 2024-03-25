@@ -37,6 +37,7 @@ const Form = styled("form")({
   gap: "2rem",
 })
 
+
 const Profile = () => {
   const [visibilityOld, setVisibilityOld] = useState<boolean>(false)
   const [visibilityOldRepeat, setVisibilityOldRepeat] = useState<boolean>(false)
@@ -82,6 +83,7 @@ const Profile = () => {
       }
       console.log("formData", formData)
       const res = formData ? await upload(formData).unwrap() : ""
+      console.log("res.image", res.image.split("\\"))
       updatedData.image = formData ? res.image.split("\\").slice(-1)[0] : ""
 
       console.log("updatedData", updatedData)
@@ -113,7 +115,6 @@ const Profile = () => {
       }
     }
   }
-
 
   const isLoading = updateLoading || removeLoading
   const error = updateError || removeError
