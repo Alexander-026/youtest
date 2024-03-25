@@ -83,7 +83,8 @@ const Profile = () => {
       }
       console.log("formData", formData)
       const res = formData ? await upload(formData).unwrap() : ""
-      console.log("res.image", res.image.split("/"))
+      console.log("res.image", res.image.split("/public"))
+      
       updatedData.image = formData ? res.image.split("\\").slice(-1)[0] : ""
 
       console.log("updatedData", updatedData)
