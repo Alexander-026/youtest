@@ -17,8 +17,8 @@ const app = express();
 
 
 
-// const allowedOrigins = [process.env.CLIENT_ORIGIN];
-const allowedOrigins = [process.env.HOST_ORIGIN];
+const allowedOrigins = [process.env.CLIENT_ORIGIN];
+// const allowedOrigins = [process.env.HOST_ORIGIN];
 
 const corsOptions = {
   origin: (origin, callback) => {
