@@ -1,20 +1,23 @@
 import * as yup from "yup"
 
-const pattern =
-  /^([a-zA-ZäöüßÄÖÜ\s-]{2,}(?:\s[a-zA-ZäöüßÄÖÜ\s-]{2,})? - [a-zA-ZäöüßÄÖÜа-яА-Я\s-]{2,}(?:\s[a-zA-ZäöüßÄÖÜа-яА-Я\s-]{2,})?,[ \t]*){0,99}[a-zA-ZäöüßÄÖÜ\s-]{2,}(?:\s[a-zA-ZäöüßÄÖÜ\s-]{2,})? - [a-zA-ZäöüßÄÖÜа-яА-Я\s-]{2,}(?:\s[a-zA-ZäöüßÄÖÜа-яА-Я\s-]{2,})?[.,]?[ \t]*$/
+// const pattern =
+//   /^([a-zA-ZäöüßÄÖÜ\s-]{2,}(?:\s[a-zA-ZäöüßÄÖÜ\s-]{2,})? - [a-zA-ZäöüßÄÖÜа-яА-Я\s-]{2,}(?:\s[a-zA-ZäöüßÄÖÜа-яА-Я\s-]{2,})?,[ \t]*){0,99}[a-zA-ZäöüßÄÖÜ\s-]{2,}(?:\s[a-zA-ZäöüßÄÖÜ\s-]{2,})? - [a-zA-ZäöüßÄÖÜа-яА-Я\s-]{2,}(?:\s[a-zA-ZäöüßÄÖÜа-яА-Я\s-]{2,})?[.,]?[ \t]*$/
+// const pattern = /^([\p{L}\s]{3,}?)\s*=\s*([\p{L}\s]{3,}?)$/gu
+const pattern =  /^([a-zA-ZäöüßÄÖÜ\s-]{2,}(?:\s[a-zA-ZäöüßÄÖÜ\s-]{2,})?)\s*=\s*([а-яА-Я\s-]{2,}(?:\s[а-яА-Я\s-]{2,})?)$/gm;
+
+
+
 
 const pairsSchema = {
-  pairs: yup
-    .string()
-    .required("Pairs is required")
-    .matches(pattern, {
-      message: `The format should be written in this form:
-      Foreign - Native,
-      Foreign - Native,
-      Foreign - Native. 
-    `,
-      excludeEmptyString: true,
-    }),
+  pairs: yup.string().required("Pairs is required")
+  .matches(pattern, {
+    message: `The format should be written in this form:
+    Foreign = Native\s
+    Foreign = Native\s
+    Foreign = Native\s
+  `,
+    excludeEmptyString: true,
+  }),
 }
 
 export const wordPairsSchema = yup
@@ -24,6 +27,72 @@ export const wordPairsSchema = yup
   })
   .required()
 
-export const addManySchema = yup.object({
-  ...pairsSchema
-}).required()
+export const addManySchema = yup
+  .object({
+    ...pairsSchema,
+  })
+  .required()
+
+
+
+  
+  
+   
+   
+   
+   
+  
+  
+  
+  
+   
+   
+  
+   
+  
+   
+   
+   
+   
+   
+  
+  
+  
+  
+  
+  
+  
+  
+  
+ 
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+

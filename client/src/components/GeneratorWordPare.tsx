@@ -35,7 +35,7 @@ const GeneratorWordPare = () => {
   const pairs = useMemo<Pair[]>(() => {
     let filteredWords: string[] = []
     const wordsD = watchedFields
-      .pairsWord!.split(",")
+      .pairsWord!.split("\n")
       .map(item => item.trim().toLocaleLowerCase())
       .filter(item => {
         if (!!item && !filteredWords.includes(item)) {
@@ -46,7 +46,7 @@ const GeneratorWordPare = () => {
         }
       })
     const paresA = wordsD.map(item =>
-      item.split("-").map(inner => inner.trim()),
+      item.split("=").map(inner => inner.trim()),
     )
     const cardPairs: Pair[] = paresA
       .map(item => {
@@ -66,8 +66,10 @@ const GeneratorWordPare = () => {
   }, [watchedFields.pairsWord])
 
   // Form submit event handler
-  const onSubmit: SubmitHandler<GeneratorPars> = async () => {
+  const onSubmit: SubmitHandler<GeneratorPars> = async e => {
     if (!user) return
+
+    console.log("pairs", pairs)
     // Call the mutation to Create Pairs
     await createWordPares({
       idUser: user.id,
@@ -81,6 +83,9 @@ const GeneratorWordPare = () => {
   const errorMessage = "Es müssen mindestens 10 Wortpaare vorhanden sein"
   const lessThanTen = pairs.length > 0 && pairs.length < 10
   const lessThanTenMessage = lessThanTen ? errorMessage : ""
+
+
+
 
   return (
     <Box sx={{ width: { sm: "35rem", xs: "100%" } }}>
@@ -138,7 +143,7 @@ const GeneratorWordPare = () => {
             </Button>
             <Button
               type="submit"
-              disabled={lessThanTen || !isValid}
+              // disabled={lessThanTen || !isValid}
               variant="contained"
               size={"small"}
             >

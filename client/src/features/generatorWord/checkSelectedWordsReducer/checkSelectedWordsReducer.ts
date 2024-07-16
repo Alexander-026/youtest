@@ -2,7 +2,7 @@ import type { CaseReducer } from "@reduxjs/toolkit"
 import checkWordsID from "../../../utils/checkWordsID"
 import type { IGeneratorWordState, Pair } from "../../../types/wordPairs"
 
-const checkSelectedWords: CaseReducer<IGeneratorWordState> = (state) => {
+const checkSelectedWords: CaseReducer<IGeneratorWordState> = state => {
   const { foreignId, nativeId, hasIds } = checkWordsID(state)
 
   if (state.wordPairCardPractic) {
@@ -12,18 +12,20 @@ const checkSelectedWords: CaseReducer<IGeneratorWordState> = (state) => {
       state.testParams.totalMistakes++
 
       state.wordPairCardPractic.pairsWord =
-        state.wordPairCardPractic.pairsWord.map((pair) =>
-          pair.id === foreignId
-            ? {
-                ...pair,
-                correctAnswers: Math.max(0, pair.correctAnswers - 1),
-              }
-            : pair,
-        )
+        state.wordPairCardPractic.pairsWord.map(pair => {
+          if (pair.id === foreignId) {
+            return {
+              ...pair,
+              correctAnswers: Math.max(-1, pair.correctAnswers - 1),
+            }
+          } else {
+            return pair
+          }
+        })
       return
     } else if (hasIds && foreignId === nativeId) {
       state.wordPairCardPractic.pairsWord =
-        state.wordPairCardPractic.pairsWord.map((pair) =>
+        state.wordPairCardPractic.pairsWord.map(pair =>
           pair.id === foreignId
             ? {
                 ...pair,
@@ -33,7 +35,7 @@ const checkSelectedWords: CaseReducer<IGeneratorWordState> = (state) => {
         )
 
       const updatePairs = (pairs: Pair[]): Pair[] => {
-        return pairs.map((p) =>
+        return pairs.map(p =>
           p.id === foreignId ? { ...p, mastered: true } : p,
         )
       }
@@ -45,8 +47,8 @@ const checkSelectedWords: CaseReducer<IGeneratorWordState> = (state) => {
       state.testParams.nativeArr = updatePairs(state.testParams.nativeArr)
 
       const pageMastered =
-        !state.testParams.foreignArr.find((p) => !p.mastered) &&
-        !state.testParams.nativeArr.find((p) => !p.mastered)
+        !state.testParams.foreignArr.find(p => !p.mastered) &&
+        !state.testParams.nativeArr.find(p => !p.mastered)
 
       state.testParams.pageMastered = pageMastered
       state.testParams.selectedForeignKey = ""
