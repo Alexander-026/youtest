@@ -25,17 +25,21 @@ const sendEmail = async (req, res, next) => {
             `,
     };
 
-   transporter.sendMail(mailOptions, function (error, info) {
+   return await new Promise((resolve, reject) => {
+    transporter.sendMail(mailOptions, function (error, info) {
       if (error) {
         console.error("Error sending email:", error);
+        reject(err);
         return res
           .status(500)
           .json({ message: "Ошибка при отправке сообщения" });
       } else {
         console.log("Email sent: " + info.response);
+        resolve(info);
         return res.status(200).json({ message: "Ваше сообщение отправлено" });
       }
     });
+   })
    
   } catch (error) {
     next(error);
