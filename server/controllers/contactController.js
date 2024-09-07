@@ -8,6 +8,7 @@ const transporter = nodemailer.createTransport({
     user:  process.env.SMTP_USER,
     pass:  process.env.SMTP_PASS,
   },
+  secure: true
 });
 
 const sendEmail = async (req, res, next) => {
@@ -24,7 +25,7 @@ const sendEmail = async (req, res, next) => {
             `,
     };
 
-    transporter.sendMail(mailOptions, function (error, info) {
+   transporter.sendMail(mailOptions, function (error, info) {
       if (error) {
         console.error("Error sending email:", error);
         return res
