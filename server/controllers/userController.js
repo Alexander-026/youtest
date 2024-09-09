@@ -10,10 +10,11 @@ import { validationResult } from "express-validator";
 import ApiError from "../exceptions/apiError.js";
 
 const saveCookie = (res, tokenName, token) => {
+  console.log("process.env.NODE_ENV === production", process.env.NODE_ENV === "production")
   res.cookie(tokenName, token, {
     httpOnly: true,
-    // secure: true,
-    // sameSite: 'None',
+    secure: process.env.NODE_ENV === "production",
+    // sameSite: process.env.NODE_ENV === "production" ? "Lap" : 'None',
     maxAge: 30 * 24 * 60 * 60 * 1000,
   });
 }
