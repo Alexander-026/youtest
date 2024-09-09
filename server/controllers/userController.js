@@ -13,8 +13,10 @@ const saveCookie = (res, tokenName, token) => {
   console.log("process.env.NODE_ENV === production", process.env.NODE_ENV === "production")
   res.cookie(tokenName, token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: process.env.NODE_ENV === "production" ? "None" : 'Lax',
+    // secure: process.env.NODE_ENV === "production",
+    // sameSite: process.env.NODE_ENV === "production" ? "None" : 'Lax',
+    secure: false,
+    sameSite: "Lax",
     maxAge: 30 * 24 * 60 * 60 * 1000,
   });
 }
