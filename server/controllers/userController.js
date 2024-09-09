@@ -9,6 +9,15 @@ import {
 import { validationResult } from "express-validator";
 import ApiError from "../exceptions/apiError.js";
 
+const saveCookie = (res, tokenName, token) => {
+  res.cookie(tokenName, token, {
+    httpOnly: true,
+    // secure: true,
+    // sameSite: 'None',
+    maxAge: 30 * 24 * 60 * 60 * 1000,
+  });
+}
+
 const registerUser = async (req, res, next) => {
   try {
     const errors = validationResult(req);
@@ -25,12 +34,7 @@ const registerUser = async (req, res, next) => {
       image
     );
 
-    res.cookie("refreshToken", userData.refreshToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'None',
-      maxAge: 30 * 24 * 60 * 60 * 1000,
-    });
+    saveCookie(res,"refreshToken", userData.refreshToken)
 
     return res.status(201).json(userData);
   } catch (error) {
@@ -43,12 +47,7 @@ const loginUser = async (req, res, next) => {
     const { email, password } = req.body;
     const userData = await login(email, password);
 
-    res.cookie("refreshToken", userData.refreshToken, {
-      httpsOnly: true,
-      secure: true,
-      sameSite: 'None',
-      maxAge: 30 * 24 * 60 * 60 * 1000,
-    });
+    saveCookie(res,"refreshToken", userData.refreshToken)
 
     return res.status(201).json(userData);
   } catch (error) {
@@ -70,12 +69,7 @@ const updateUser = async (req, res, next) => {
       image,
     });
 
-    res.cookie("refreshToken", userData.refreshToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: 'None',
-      maxAge: 30 * 24 * 60 * 60 * 1000,
-    });
+    saveCookie(res,"refreshToken", userData.refreshToken)
     
 
     return res.status(201).json(updatedUser);
@@ -100,12 +94,7 @@ const refreshTokens = async (req, res, next) => {
     const { refreshToken } = req.cookies;
     const userData = await refresh(refreshToken);
 
-    res.cookie("refreshToken", userData.refreshToken, {
-      httpsOnly: true,
-      secure: true,
-      sameSite: 'None',
-      maxAge: 30 * 24 * 60 * 60 * 1000,
-    });
+    saveCookie(res,"refreshToken", userData.refreshToken)
 
    
 

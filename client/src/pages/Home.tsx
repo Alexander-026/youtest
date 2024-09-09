@@ -129,7 +129,7 @@ const Home = () => {
         <Stack
           direction="column"
           gap={{ xs: 2, sm: 3 }}
-          sx={{ width: "25rem", margin: "0 auto" }}
+          sx={{ width: {md: "25rem", xs: "100%"}, margin: "0 auto" }}
         >
           <Typography variant="h5" textAlign="center">
             Contact Me
