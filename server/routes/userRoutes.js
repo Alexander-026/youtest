@@ -27,7 +27,7 @@ router
 router.post("/login", loginUser);
 router.post("/logout", logoutCurrentUser);
 router.put("/update", updateUser);
-router.get("/refresh", refreshTokens);
+router.post("/refresh", refreshTokens);
 router.get("/", authMiddleWare, authorizeAdmin, getUsers);
 
 

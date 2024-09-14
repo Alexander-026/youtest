@@ -10,7 +10,6 @@ import { validationResult } from "express-validator";
 import ApiError from "../exceptions/apiError.js";
 
 const saveCookie = (res, tokenName, token) => {
-  console.log("process.env.NODE_ENV === production", process.env.NODE_ENV === "production")
   res.cookie(tokenName, token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
@@ -92,8 +91,10 @@ const logoutCurrentUser = async (req, res, next) => {
 
 const refreshTokens = async (req, res, next) => {
   try {
+    const { clientRefreshToken } = req.body
     const { refreshToken } = req.cookies;
-    const userData = await refresh(refreshToken);
+    const token = refreshToken || clientRefreshToken
+    const userData = await refresh(token);
 
     saveCookie(res,"refreshToken", userData.refreshToken)
 

@@ -30,6 +30,7 @@ const Login = () => {
   const { onUser } = userSlice.actions
   // Hook for working with local storage
   const [token, setToken] = useLocalStorage("accessToken")
+  const [_, setRefreshToken] = useLocalStorage("refreshToken")
 
   // React-hook-form hook for form management
   const {
@@ -52,6 +53,7 @@ const Login = () => {
       const loggedUser = await login(e).unwrap()
       dispath(onUser(loggedUser.user))
       setToken(loggedUser.accessToken)
+      setRefreshToken(loggedUser.refreshToken)
       navigate("/", { replace: true })
     } catch (e) {
       console.log("error", e)

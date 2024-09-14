@@ -45,9 +45,11 @@ export const userApiSlice = apiSlice.injectEndpoints({
         body: data,
       }),
     }),
-    refresh: builder.query<User, void>({
-      query: () => ({
+    refresh: builder.mutation<User, {refreshToken: string}>({
+      query: (body) => ({
         url: `${import.meta.env.VITE_USERS_URL}/refresh`,
+        method: "POST",
+        body: body,
       }),
     }),
     logout: builder.mutation<void, void>({
@@ -77,7 +79,7 @@ export const {
   useUpdateUserMutation,
   useRemoveUserImageMutation,
   useUploadUserImageMutation,
-  useLazyRefreshQuery,
+  useRefreshMutation,
   useLogoutMutation,
   useGetUsersQuery,
   useSendEmailMutation
