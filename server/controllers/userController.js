@@ -91,15 +91,11 @@ const logoutCurrentUser = async (req, res, next) => {
 
 const refreshTokens = async (req, res, next) => {
   try {
-    const { clientRefreshToken } = req.body
+    const { refreshToken: clientRefreshToken } = req.body
     const { refreshToken } = req.cookies;
-    const token = refreshToken || clientRefreshToken
+    const token =  refreshToken || clientRefreshToken 
     const userData = await refresh(token);
-
     saveCookie(res,"refreshToken", userData.refreshToken)
-
-   
-
     return res.status(201).json(userData);
   } catch (error) {
     next(error);
