@@ -14,6 +14,7 @@ import useLocalStorage from "../hooks/useLocalStorage"
 const AccountMenu = () => {
   const { user } = useAppSelector(state => state.user)
   const [, , removeToken] = useLocalStorage("accessToken")
+  const [, , removeRefreshToken] = useLocalStorage("refreshToken")
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
   const { logOut } = userSlice.actions
@@ -31,6 +32,7 @@ const AccountMenu = () => {
     try {
       dispatch(logOut())
       removeToken()
+      removeRefreshToken()
       navigate("/", { replace: true })
       await logoutApiCall()
     } catch (err) {

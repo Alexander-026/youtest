@@ -36,6 +36,7 @@ const Register = () => {
   const { onUser } = userSlice.actions
   // Hook for working with local storage
   const [token, setToken] = useLocalStorage("accessToken")
+  const [, setRefreshToken] = useLocalStorage("refreshToken")
 
   const {
     control,
@@ -63,6 +64,7 @@ const Register = () => {
       const registeredUser = await register(e).unwrap()
       dispath(onUser(registeredUser.user))
       setToken(registeredUser.accessToken)
+      setRefreshToken(registeredUser.refreshToken)
       navigate("/", { replace: true })
     } catch (e) {
       console.log("error", e)

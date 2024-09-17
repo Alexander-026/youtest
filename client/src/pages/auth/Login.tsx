@@ -30,7 +30,7 @@ const Login = () => {
   const { onUser } = userSlice.actions
   // Hook for working with local storage
   const [token, setToken] = useLocalStorage("accessToken")
-  const [_, setRefreshToken] = useLocalStorage("refreshToken")
+  const [, setRefreshToken] = useLocalStorage("refreshToken")
 
   // React-hook-form hook for form management
   const {
@@ -146,13 +146,13 @@ const Login = () => {
               size="small"
               type="submit"
             >
-              {isLoading ? "Loading" : "Anmelden"}
+              {isLoading ? "Loading" : "Log in"}
             </Button>
 
             {/* Link for navigating to the registration page */}
             <Link to="/register">
               <Typography align="right" color="blue">
-                Registrierung
+                Registration
               </Typography>
             </Link>
           </Stack>

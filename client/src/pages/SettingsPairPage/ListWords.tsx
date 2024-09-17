@@ -116,7 +116,6 @@ const ListWords: React.FC<{ pair: Pair[] }> = ({ pair }) => {
     const paresA = wordsD.map(item =>
       item.split(/ - | = /).map(inner => inner.trim().replace(",", "")),
     )
-    console.log("paresA", paresA)
     const cardPairs: Pair[] = paresA
       .map(item => {
         const foreignWord = item[0]
