@@ -14,6 +14,7 @@ describe("makePieces function", () => {
       native: `native_${index}`,
       mastered: false,
       correctAnswers: 0,
+      correctlyWritted: 0,
     }))
 
     // Set the quantity of pairs and the desired number of pieces
