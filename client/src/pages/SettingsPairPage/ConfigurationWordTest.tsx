@@ -146,7 +146,7 @@ const ConfigurationWordTest = () => {
             In Tolal:{wordPairCardPractic!.totalWords}
           </Typography>
           <Typography variant="body1">
-            Lerned:{sumLearnedWords(wordPairCardPractic!.pairsWord)}
+            Lerned:{sumLearnedWords(wordPairCardPractic!.pairsWord, "correctAnswers")}
           </Typography>
           <Typography variant="body1">
             Last Result:{wordPairCardPractic!.lastResult}%
