@@ -15,6 +15,7 @@ const defaultWordPairCardData: WordPairCard = {
       transcription: "sss",
       mastered: false,
       correctAnswers: 0,
+      correctlyWritted: 0,
     },
     {
       id: "2",
@@ -23,6 +24,7 @@ const defaultWordPairCardData: WordPairCard = {
       transcription: "sss",
       mastered: false,
       correctAnswers: 0,
+      correctlyWritted: 0,
     },
     {
       id: "3",
@@ -31,6 +33,7 @@ const defaultWordPairCardData: WordPairCard = {
       transcription: "sss",
       mastered: false,
       correctAnswers: 0,
+      correctlyWritted: 0,
     },
     {
       id: "4",
@@ -39,6 +42,7 @@ const defaultWordPairCardData: WordPairCard = {
       transcription: "sss",
       mastered: false,
       correctAnswers: 0,
+      correctlyWritted: 0,
     },
     {
       id: "5",
@@ -47,6 +51,7 @@ const defaultWordPairCardData: WordPairCard = {
       transcription: "sss",
       mastered: false,
       correctAnswers: 0,
+      correctlyWritted: 0,
     },
     {
       id: "6",
@@ -55,6 +60,7 @@ const defaultWordPairCardData: WordPairCard = {
       transcription: "sss",
       mastered: false,
       correctAnswers: 0,
+      correctlyWritted: 0,
     },
     {
       id: "7",
@@ -63,6 +69,7 @@ const defaultWordPairCardData: WordPairCard = {
       transcription: "sss",
       mastered: false,
       correctAnswers: 0,
+      correctlyWritted: 0,
     },
     {
       id: "8",
@@ -71,6 +78,7 @@ const defaultWordPairCardData: WordPairCard = {
       transcription: "sss",
       mastered: false,
       correctAnswers: 0,
+      correctlyWritted: 0,
     },
     {
       id: "9",
@@ -79,6 +87,7 @@ const defaultWordPairCardData: WordPairCard = {
       transcription: "sss",
       mastered: false,
       correctAnswers: 0,
+      correctlyWritted: 0,
     },
     {
       id: "10",
@@ -87,6 +96,7 @@ const defaultWordPairCardData: WordPairCard = {
       transcription: "sss",
       mastered: false,
       correctAnswers: 0,
+      correctlyWritted: 0,
     },
   ],
 }

@@ -13,6 +13,7 @@ const wordPairsDto = (wordPairs) => {
       transcription: p.transcription,
       mastered: p.mastered,
       correctAnswers: p.correctAnswers,
+      correctlyWritted: p.correctlyWritted
     })),
   };
 };

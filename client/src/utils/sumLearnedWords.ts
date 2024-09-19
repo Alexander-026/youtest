@@ -1,10 +1,10 @@
 import type { Pair } from "../types/wordPairs"
 
-const sumLearnedWords = (pairs: Pair[]): number => {
+const sumLearnedWords = (pairs: Pair[], type: "correctAnswers" | "correctlyWritted" ): number => {
   let sum = 0
 
   pairs.forEach((pair) => {
-    if (pair.correctAnswers > 5) {
+    if (pair[type] > 5) {
       sum++
     }
   })

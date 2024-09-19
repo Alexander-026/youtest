@@ -14,6 +14,7 @@ export const wordPairCard = new Schema({
       transcription: { type: String, require: true },
       mastered: { type: Boolean, default: false },
       correctAnswers: { type: Number, default: 0 },
+      correctlyWritted: { type: Number, default: 0 },
     },
   ],
 });

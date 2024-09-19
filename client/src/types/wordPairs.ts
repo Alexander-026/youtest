@@ -7,6 +7,7 @@ export type Pair = {
   transcription: string
   mastered: boolean
   correctAnswers: number
+  correctlyWritted: number
 }
 
 export type PiecesArrPars = {

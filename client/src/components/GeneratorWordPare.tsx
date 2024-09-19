@@ -60,6 +60,7 @@ const GeneratorWordPare = () => {
           native: nativeWord,
           transcription: transcriptionWord,
           correctAnswers: 0,
+          correctlyWritted: 0,
           mastered: false,
         }
       })

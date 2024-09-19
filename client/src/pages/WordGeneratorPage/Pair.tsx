@@ -19,7 +19,7 @@ import Zoom from "@mui/material/Zoom"
 // Styles for each pair item in the card
 const stylesItemPair = {
   width: "10rem",
-  height: "12rem",
+  height: "14rem",
   padding: "1rem",
   position: "relative",
   display: "flex",
@@ -80,7 +80,10 @@ const Pair: React.FC<PairProps> = ({ pair }) => {
           {pair.visited && (
             <>
               <Typography variant="body2" textAlign="start">
-                learned words: {sumLearnedWords(pair.pairsWord)}
+                choice: {sumLearnedWords(pair.pairsWord, "correctAnswers")}
+              </Typography>
+              <Typography variant="body2" textAlign="start">
+                writing: {sumLearnedWords(pair.pairsWord, "correctlyWritted")}
               </Typography>
               <Typography variant="body2" textAlign="start">
                 last result: {pair.lastResult}%

@@ -31,7 +31,7 @@ const checkCurrentPairsArr: CaseReducer<IGeneratorWordState> = state => {
       state.wordPairCardPractic.pairsWord.map(p => {
         const pair = currentOriginalArrPairs.find(m => m.id === p.id)
         if (pair) {
-          p.correctAnswers = Math.max(0, pair.correctAnswers + 1)
+          p.correctlyWritted = Math.max(0, pair.correctlyWritted + 1)
         }
         return p
       })
@@ -62,7 +62,7 @@ const checkCurrentPairsArr: CaseReducer<IGeneratorWordState> = state => {
       state.wordPairCardPractic.pairsWord.map(p => {
         const pair = mistakes.find(m => m.id === p.id)
         if (pair) {
-          p.correctAnswers = Math.max(0, pair.correctAnswers - 1)
+          p.correctlyWritted = Math.max(0, pair.correctlyWritted - 1)
         }
         return p
       })

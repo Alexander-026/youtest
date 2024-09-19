@@ -17,6 +17,7 @@ const addPair: CaseReducer<IGeneratorWordState> = (state) => {
       transcription: "",
       mastered: false,
       correctAnswers: 0,
+      correctlyWritted: 0,
     }
 
     // Create a new array with the new pair added at the beginning
