@@ -12,8 +12,10 @@ import ApiError from "../exceptions/apiError.js";
 const saveCookie = (res, tokenName, token) => {
   res.cookie(tokenName, token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: process.env.NODE_ENV === "production" ? "None" : 'Lax',
+    // secure: process.env.NODE_ENV === "production",
+    // sameSite: process.env.NODE_ENV === "production" ? "None" : 'Lax',
+    secure: true,
+    sameSite: "None",
     maxAge: 30 * 24 * 60 * 60 * 1000,
   });
 }
