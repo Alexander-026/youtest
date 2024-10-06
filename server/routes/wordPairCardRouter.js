@@ -1,5 +1,5 @@
 import express from "express";
-import { authMiddleWare } from "../middlewares/authMiddleware.js";
+import { authMiddleWare, authorizeAdmin } from "../middlewares/authMiddleware.js";
 import {
   createWordPairs,
   visitWordPairs,
@@ -11,7 +11,7 @@ import {
 
 const router = express.Router();
 
-router.post("/create", createWordPairs);
+router.post("/create",  createWordPairs);
 router.put("/visit", visitWordPairs);
 router.put("/update", updateWordPairs);
 router.put("/evaluate", evaluateTest);

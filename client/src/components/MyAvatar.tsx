@@ -3,7 +3,7 @@ import type { DecodedUser } from "../types/user"
 import { Avatar } from "@mui/material"
 
 type MyAvatarTypes = {
-  user: DecodedUser
+  user: Pick<DecodedUser, "firstName" | "lastName" | "image">
 }
 
 function stringToColor(string: string) {

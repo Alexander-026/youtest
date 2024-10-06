@@ -9,10 +9,13 @@ import { useCallback, useEffect } from "react"
 import { useAppDispatch } from "../app/hooks"
 import { userSlice } from "../features/user/userSlice"
 import { useNavigate } from "react-router-dom"
+import useSocket from "../hooks/useSocket"
 
 const Layout = () => {
+  useSocket()
   const [token, setToken, removeToken] = useLocalStorage("accessToken")
-  const [refreshToken, setRefreshToken, removeRefreshToken] = useLocalStorage("refreshToken")
+  const [refreshToken, setRefreshToken, removeRefreshToken] =
+    useLocalStorage("refreshToken")
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
   const { onUser, logOut } = userSlice.actions
@@ -22,7 +25,7 @@ const Layout = () => {
   const refreshHandler = useCallback(async () => {
     try {
       if (token && refreshToken) {
-        const res = await refresh({refreshToken}).unwrap()
+        const res = await refresh({ refreshToken }).unwrap()
         setToken(res.accessToken)
         setRefreshToken(res.refreshToken)
         dispatch(onUser(res.user))
@@ -34,12 +37,12 @@ const Layout = () => {
       await logOutApiCall()
       navigate("/", { replace: true })
     }
-    
   }, [])
 
   useEffect(() => {
     refreshHandler()
   }, [])
+
 
 
   return (

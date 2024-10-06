@@ -49,7 +49,7 @@ export const userApiSlice = apiSlice.injectEndpoints({
       query: (body) => ({
         url: `${import.meta.env.VITE_USERS_URL}/refresh`,
         method: "POST",
-        body: body,
+        body
       }),
     }),
     logout: builder.mutation<void, void>({
@@ -58,10 +58,11 @@ export const userApiSlice = apiSlice.injectEndpoints({
         method: "POST",
       }),
     }),
-    getUsers: builder.query<DecodedUser[], void>({
+    getUsers: builder.query<DecodedUser[],void>({
       query: () => ({
         url: import.meta.env.VITE_USERS_URL,
       }),
+      providesTags: ["users"]
     }),
     sendEmail: builder.mutation<any, ContactMe>({
       query: (data) => ({
@@ -69,7 +70,43 @@ export const userApiSlice = apiSlice.injectEndpoints({
         method: "POST",
         body: data,
       }),
-    })
+    }),
+    friendRequest: builder.mutation<any, {myUserId:string, senderUserId:string}>({
+      query: (data) => ({
+        url: `${import.meta.env.VITE_USERS_URL}/friendRequest`,
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["users"]
+    }),
+    acceptFriendship: builder.mutation<any, {myUserId:string, senderUserId:string}>({
+      query: (data) => ({
+        url: `${import.meta.env.VITE_USERS_URL}/acceptFriendship`,
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["friendRequests"]
+    }),
+    cancelFriendship: builder.mutation<any, {myUserId:string, senderUserId:string}>({
+      query: (data) => ({
+        url: `${import.meta.env.VITE_USERS_URL}/cancelFriendship`,
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["friendRequests"]
+    }),
+    getUsersById: builder.mutation<Pick<DecodedUser, "firstName" | "lastName" | "id" | "image">[], {userIds: string[]}>({
+      query: (data) => {
+          // Преобразуем массив в строку
+        return {
+          url: `${import.meta.env.VITE_USERS_URL}/getUsersById`,
+          method: "POST",
+          body: data
+        }
+      },
+      invalidatesTags: ["friendRequests"]
+    }),
+
   }),
 })
 
@@ -82,5 +119,10 @@ export const {
   useRefreshMutation,
   useLogoutMutation,
   useGetUsersQuery,
-  useSendEmailMutation
+  useSendEmailMutation,
+  useFriendRequestMutation,
+  useAcceptFriendshipMutation,
+  useCancelFriendshipMutation,
+  useGetUsersByIdMutation
+
 } = userApiSlice

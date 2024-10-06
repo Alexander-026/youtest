@@ -5,6 +5,10 @@ import {
   registration,
   refresh,
   getAllUsers,
+  sendFriendRequestService,
+  acceptFriendshipService,
+  cancelFriendshipService,
+  getUsersByIdService,
 } from "../service/userService.js";
 import { validationResult } from "express-validator";
 import ApiError from "../exceptions/apiError.js";
@@ -71,8 +75,7 @@ const updateUser = async (req, res, next) => {
       image,
     });
 
-    saveCookie(res,"refreshToken", userData.refreshToken)
-    
+    saveCookie(res,"refreshToken", updatedUser.refreshToken)
 
     return res.status(201).json(updatedUser);
   } catch (error) {
@@ -106,12 +109,54 @@ const refreshTokens = async (req, res, next) => {
 
 const getUsers = async (req, res, next) => {
   try {
-    const users = await getAllUsers();
+    const users = await getAllUsers(req);
     return res.json(users);
   } catch (error) {
     next(error);
   }
 };
+
+
+
+const sendFriendRequestController = async (req, res, next) => {
+  try {
+    const {myUserId, senderUserId } = req.body
+    const result = await sendFriendRequestService(myUserId, senderUserId)
+    return res.json(result);
+  } catch (error) {
+    next(error);
+  }
+}
+
+
+const acceptFriendshipController = async (req, res, next) => {
+  try {
+    const {myUserId, senderUserId } = req.body
+    const result = await acceptFriendshipService(myUserId, senderUserId)
+    return res.json(result);
+  } catch (error) {
+    next(error);
+  }
+}
+const cancelFriendshipController = async (req, res, next) => {
+  try {
+    const {myUserId, senderUserId } = req.body
+    const result = await cancelFriendshipService(myUserId, senderUserId)
+    return res.json(result);
+  } catch (error) {
+    next(error);
+  }
+}
+
+const getUsersByIdController = async (req, res, next) => {
+  try {
+    const {userIds } = req.body
+    const result = await getUsersByIdService(userIds)
+    return res.json(result);
+  } catch (error) {
+    next(error);
+  }
+}
 
 export {
   registerUser,
@@ -120,4 +165,8 @@ export {
   logoutCurrentUser,
   refreshTokens,
   getUsers,
+  sendFriendRequestController,
+  acceptFriendshipController,
+  cancelFriendshipController,
+  getUsersByIdController
 };

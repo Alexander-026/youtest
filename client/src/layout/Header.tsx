@@ -13,29 +13,42 @@ import { FaUsers } from "react-icons/fa"
 import { BsTranslate } from "react-icons/bs"
 import { Link } from "react-router-dom"
 import AuthMenu from "../components/AuthMenu"
-import AccountMenu from "../components/AccountMenu"
 import { useAppSelector } from "../app/hooks"
 import type { Pages } from "../types/pages"
 import DriwerItem from "../components/DriwerItem"
+import { BiMessageSquareDetail } from "react-icons/bi"
+import { GiThreeFriends } from "react-icons/gi";
+import Notifications from "../components/Notifications"
+import AccountMenu from "../components/AccountMenu"
+
+
 
 const pages: Pages[] = [
   {
-    path: "/admin/users",
+    path: "/users",
     icon: <FaUsers size={20} />,
     label: "Users",
-    isAdmin: true,
+    isAdmin: false,
   },
   {
-    path: "/generator",
+    path: "/friends",
+    icon: <GiThreeFriends size={20} />,
+    label: "Friends",
+    isAdmin: false,
+  },
+  {
+    path: "/admin/generator",
     icon: <BsTranslate size={20} />,
     label: "Generate Words",
-    isAdmin: false,
+    isAdmin: true,
   },
 ]
 
 const Header = () => {
   const [open, setOpen] = useState<boolean>(false)
   const { user } = useAppSelector(state => state.user)
+
+
   return (
     <AppBar position="sticky">
       <Drawer
@@ -86,7 +99,28 @@ const Header = () => {
             </Typography>
           </Link>
 
-          {user ? <AccountMenu /> : <AuthMenu />}
+          {user ? (
+            <Stack direction={"row"} alignItems="center" gap={1}>
+              <Link to="/messages">
+                <IconButton size="small" >
+                  <BiMessageSquareDetail color="white"  fontSize={25} />
+                </IconButton>
+              </Link>
+              <Notifications/>
+              {/* <Link to="/notifications">
+                
+              </Link> */}
+              {/* <IconButton size="small">
+                  <Badge badgeContent={user.friendRequests.length} color="success">
+                    <IoMdNotificationsOutline color="white"  fontSize={25} />
+                  </Badge>
+                </IconButton>
+              */}
+               <AccountMenu />
+            </Stack>
+          ) : (
+            <AuthMenu />
+          )}
         </Stack>
       </Toolbar>
     </AppBar>

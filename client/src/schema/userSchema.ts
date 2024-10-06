@@ -19,6 +19,23 @@ const userSchema = {
     .required("Passwort wird benötigt")
     .min(3, "mindestens 3 Zeichen"),
   image: yup.string(),
+  friendRequests: yup.array().of(
+    yup.object().shape({
+      userId: yup.string().required("userId is required"),
+      _id: yup.string().required("_id is required"),
+      requestDate: yup.string().required("requestDate is required")
+    })
+  )
+  .default([]),
+  friends: yup.array().of(
+    yup.object().shape({
+      userId: yup.string().required("userId is required"),
+      _id: yup.string().required("_id is required"),
+      requestDate: yup.string().required("requestDate is required")
+    })
+  )
+  .default([])
+
 }
 
 export const userLoginSchema = yup

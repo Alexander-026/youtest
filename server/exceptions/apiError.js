@@ -19,6 +19,13 @@ class ApiError extends Error {
     return new ApiError(403, "Invalid Refresh Token.");
   }
 
+  static NotFound(message, errors = []) {
+    return new ApiError(404, message, errors);
+  }
+  static Conflict(message, errors = []) {
+    return new ApiError(409, message, errors);
+  }
+
   static BadRequest(message, errors = []) {
     return new ApiError(400, message, errors);
   }

@@ -7,9 +7,17 @@ export type User = {
     email: string
     image: string
     isAdmin: boolean
+    friendRequests: Friend[]
+    friends: Friend[]
   }
   refreshToken: string
   accessToken: string
+}
+
+export type Friend = {
+  userId: string
+  _id: string
+  requestDate: string
 }
 
 export type LoginUser = {

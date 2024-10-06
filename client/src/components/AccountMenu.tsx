@@ -43,7 +43,7 @@ const AccountMenu = () => {
   return (
     <>
       {user && (
-        <div>
+        <>
           <Tooltip title="Login&Register">
             <Button
               id="basic-button"
@@ -94,7 +94,7 @@ const AccountMenu = () => {
               Logout
             </MenuItem>
           </Menu>
-        </div>
+        </>
       )}
     </>
   )

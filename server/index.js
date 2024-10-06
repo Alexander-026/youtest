@@ -1,6 +1,5 @@
-
 import express from "express";
-import cors from "cors";
+// import cors from "cors";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import errorMiddleware from "./middlewares/errorMiddleware.js";
@@ -13,18 +12,19 @@ import userRoutes from "./routes/userRoutes.js";
 import uploadRoutes from "./routes/uploadRoutes.js";
 import wordPairsRoutes from "./routes/wordPairCardRouter.js"
 import contactRoutes from './routes/contactRouter.js'
-
-const app = express();
-
+import { app, server } from "./socket/socket.js";
 
 
 
-app.use(cors({
-  origin: [process.env.CLIENT_ORIGIN],
-  // origin: [process.env.HOST_ORIGIN, "http://192.168.178.23:5173"],
-  // origin: ["http://192.168.178.23:5173"],
-  credentials: true,
-}));
+
+
+
+// app.use(cors({
+//   // origin: [process.env.CLIENT_ORIGIN],
+//   origin: [process.env.HOST_ORIGIN, "http://192.168.178.23:5173"],
+//   // origin: ["http://192.168.178.23:5173"],
+//   credentials: true,
+// }));
 
 
 
@@ -52,8 +52,9 @@ app.use((err, req, res, next) => {
   }
   next();
 });
-connectDB();
-app.listen(port, () => {
+
+server.listen(port, () => {
+  connectDB();
   console.log(`Server running on port: ${port}`);
 });
 

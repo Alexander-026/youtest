@@ -1,4 +1,9 @@
-import { onUser, logOut } from "./userReducers"
+import {
+  onUser,
+  logOut,
+  acceptFriendship,
+  cancelFriendship,
+} from "./userReducers"
 import { createSlice } from "@reduxjs/toolkit"
 import type { DecodedUser } from "./../../types/user"
 import { localUser } from "../../utils/checkAuth"
@@ -16,7 +21,14 @@ export const userSlice = createSlice({
   reducers: {
     onUser,
     logOut,
+    acceptFriendship,
+    cancelFriendship,
   },
 })
+
+export const {
+  acceptFriendship: acceptFriendshipAction,
+  cancelFriendship: cancelFriendshipAction,
+} = userSlice.actions
 
 export default userSlice.reducer

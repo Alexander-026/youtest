@@ -10,6 +10,7 @@ import {
 } from "../service/tokenService.js";
 import userDto from "../dtos/userDto.js";
 import ApiError from "../exceptions/apiError.js";
+import mongoose from "mongoose";
 
 const registration = async (
   firstName,
@@ -142,12 +143,151 @@ const refresh = async (refreshToken) => {
   return { ...tokens, user: newUser };
 };
 
-const getAllUsers = async () => {
-  const users = await User.find()
-    .select("firstName lastName email birthDate isAdmin image")
+const getAllUsers = async (req) => {
+  // const users = await User.find()
+  //   .select(
+  //     "firstName lastName email birthDate isAdmin image friendRequests friends"
+  //   )
+  //   .lean();
+
+  // // Переименовываем _id в id для каждого пользователя
+  // const usersWithId = users.map((user) => {
+  //   return { ...user, id: user._id, _id: undefined };
+  // });
+
+  // return usersWithId;
+  const loggedInUserId = new mongoose.Types.ObjectId(`${req.user.user.id}`);
+  const users = await User.aggregate([
+    {
+      $match: { _id: { $ne: loggedInUserId } }, // исключаем текущего пользователя
+    },
+    {
+      $project: {
+        firstName: 1,
+        lastName: 1,
+        email: 1,
+        birthDate: 1,
+        isAdmin: 1,
+        image: 1,
+        friendRequests: 1,
+        friends: 1,
+        id: "$_id", // создаем поле `id`, равное `_id`
+        _id: 0, // исключаем поле `_id`
+      },
+    },
+  ]);
+
+  return users;
+};
+
+const sendFriendRequestService = async (myUserId, senderUserId) => {
+  const targetUser = await User.findById(senderUserId);
+  if (!targetUser) {
+    throw ApiError.NotFound("User not Found !");
+  }
+
+  // Проверяем, не отправлен ли запрос ранее
+  const alreadyRequested = targetUser.friendRequests.some(
+    (request) => request.userId.toString() === myUserId
+  );
+  const alreadyFriend = targetUser.friends.some(
+    (request) => request.userId.toString() === myUserId
+  );
+  if (alreadyRequested) {
+    throw ApiError.Conflict("The request has already been sent!");
+  }
+  if (alreadyFriend) {
+    throw ApiError.Conflict("Already friends!");
+  }
+  // Добавляем запрос в массив friendRequests
+  targetUser.friendRequests.push({ userId: myUserId });
+  // Сохраняем изменения
+  await targetUser.save();
+  return { success: true, message: "Запрос в друзья отправлен" };
+};
+
+const acceptFriendshipService = async (myUserId, senderUserId) => {
+  const myData = await User.findById(myUserId);
+  const senderData = await User.findById(senderUserId);
+  if (!myData) {
+    throw ApiError.NotFound("User not Found !");
+  }
+  if (!senderData) {
+    throw ApiError.NotFound("Sender not Found !");
+  }
+
+  const alreadyRequested = myData.friendRequests.some(
+    (request) => request.userId.toString() === senderUserId
+  );
+
+  if (!alreadyRequested) {
+    throw ApiError.Conflict("Sender not found!");
+  }
+  myData.friendRequests = myData.friendRequests.filter(
+    (request) => request.userId.toString() !== senderUserId
+  );
+  myData.friends.push({ userId: senderUserId });
+  senderData.friends.push({ userId: myUserId });
+  await myData.save();
+  await senderData.save();
+  return {
+    success: true,
+    message: `${senderData.firstName} ${senderData.lastName} now your friend`,
+  };
+};
+
+const cancelFriendshipService = async (myUserId, senderUserId) => {
+  const myData = await User.findById(myUserId);
+  const senderData = await User.findById(senderUserId);
+  if (!myData) {
+    throw ApiError.NotFound("User or Sender not Found !");
+  }
+  if (!senderData) {
+    throw ApiError.NotFound("Sender not Found !");
+  }
+
+  const alreadyRequested = myData.friendRequests.some(
+    (request) => request.userId.toString() === senderUserId
+  );
+
+  const alreadyFriend = myData.friends.some(
+    (request) => request.userId.toString() === senderUserId
+  );
+  console.log(" myData.friends",  myData.friends)
+
+  if (!alreadyRequested && !alreadyFriend) {
+    throw ApiError.Conflict("Sender not found!");
+  }
+  myData.friendRequests = myData.friendRequests.filter(
+    (request) => request.userId.toString() !== senderUserId
+  );
+  myData.friends = myData.friends.filter(
+    (request) => request.userId.toString() !== senderUserId
+  );
+  senderData.friendRequests = myData.friendRequests.filter(
+    (request) => request.userId.toString() !== myUserId
+  );
+  senderData.friends = myData.friends.filter(
+    (request) => request.userId.toString() !== myUserId
+  );
+  await myData.save();
+  await senderData.save();
+  const canceledFriedship = `You have cancelled your friendship with ${senderData.firstName} ${senderData.lastName}`;
+  const removedFromFriends = `${senderData.firstName} ${senderData.lastName} was removed from friends`;
+  return {
+    success: true,
+    message: alreadyFriend ? removedFromFriends : canceledFriedship,
+  };
+};
+
+const getUsersByIdService = async (userIds) => {
+  // Ищем пользователей, у которых _id находится в массиве userIds
+  const users = await User.find({
+    _id: { $in: userIds }, // Оператор $in для поиска по массиву ID
+  })
+    .select("firstName lastName image")
     .lean();
 
-  // Переименовываем _id в id для каждого пользователя
   const usersWithId = users.map((user) => {
     return { ...user, id: user._id, _id: undefined };
   });
@@ -155,4 +295,15 @@ const getAllUsers = async () => {
   return usersWithId;
 };
 
-export { registration, login, update, logout, refresh, getAllUsers };
+export {
+  registration,
+  login,
+  update,
+  logout,
+  refresh,
+  getAllUsers,
+  sendFriendRequestService,
+  acceptFriendshipService,
+  cancelFriendshipService,
+  getUsersByIdService,
+};

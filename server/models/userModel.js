@@ -29,6 +29,24 @@ const userSchema = mongoose.Schema(
       default: false,
     },
     image: { type: String, default: "" },
+    friendRequests: {
+      type: [
+        {
+          userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" }, // ID пользователя, который отправил запрос
+          requestDate: { type: Date, default: Date.now }, // Дата запроса
+        },
+      ],
+      default: [],
+    },
+    friends: {
+      type: [
+        {
+          userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" }, // ID друга
+          requestDate: { type: Date, default: Date.now }, // Дата запроса
+        },
+      ],
+      default: [], // По умолчанию friends — это пустой массив
+    },
   },
   { timestamps: true }
 );

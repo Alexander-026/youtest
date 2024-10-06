@@ -1,4 +1,4 @@
-import { Backdrop, CircularProgress } from "@mui/material"
+import { Backdrop, Box, CircularProgress } from "@mui/material"
 import type { ReactNode } from "react";
 import type React from "react"
 
@@ -14,7 +14,7 @@ const LoaderWrapper: React.FC<LoaderWrapperType> = ({
   children,
 }) => {
   return (
-    <>
+    <Box>
       <Backdrop
         sx={{
           color: "#13259c",
@@ -26,7 +26,7 @@ const LoaderWrapper: React.FC<LoaderWrapperType> = ({
         <CircularProgress color="inherit" />
       </Backdrop>
       {data && children}
-    </>
+    </Box>
   )
 }
 

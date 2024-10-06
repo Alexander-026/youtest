@@ -6,11 +6,16 @@ import {
   refreshTokens,
   getUsers,
   updateUser,
+  sendFriendRequestController,
+  acceptFriendshipController,
+  cancelFriendshipController,
+  getUsersByIdController,
 } from "../controllers/userController.js";
 import { body } from "express-validator";
 import {
   authMiddleWare,
-  authorizeAdmin,
+  authorizeAdmin
+  
 } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
@@ -28,7 +33,12 @@ router.post("/login", loginUser);
 router.post("/logout", logoutCurrentUser);
 router.put("/update", updateUser);
 router.post("/refresh", refreshTokens);
-router.get("/", authMiddleWare, authorizeAdmin, getUsers);
+router.get("/", authMiddleWare,  getUsers);
+router.post("/friendRequest", sendFriendRequestController);
+router.post("/acceptFriendship", acceptFriendshipController);
+router.post("/cancelFriendship", cancelFriendshipController);
+router.post("/getUsersById", authMiddleWare, getUsersByIdController)
+
 
 
 export default router;

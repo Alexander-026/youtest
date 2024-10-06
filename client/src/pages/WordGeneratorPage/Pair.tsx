@@ -51,7 +51,7 @@ const Pair: React.FC<PairProps> = ({ pair }) => {
 
         {/* IconButton with a tooltip for navigating to pair settings */}
 
-        <Link to={`/generator/${pair.id}`}>
+        <Link to={`/admin/generator/${pair.id}`}>
           <Tooltip
             title="Einstellungen"
             placement="top"
