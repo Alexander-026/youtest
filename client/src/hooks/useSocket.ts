@@ -9,7 +9,10 @@ const useSocket = () => {
     const [socket, setSocket] = useState<any>(null)
     const connnectHandler = useCallback(() => {
         if (user) {
-          const socket = io(import.meta.env.VITE_LOCAL_URL, {
+          const socket = io(
+            // import.meta.env.VITE_LOCAL_URL, 
+            import.meta.env.VITE_BASE_URL, 
+            {
             query: {
               userId: user.id,
             },
