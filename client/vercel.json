@@ -1,17 +1,6 @@
 {
   "rewrites": [
-    {
-      "source": "/api/(.*)", 
-      "destination": "https://youtest-server.vercel.app/api/$1"
-    },
-    {
-      "source": "/socket.io/(.*)", 
-      "destination": "https://youtest-server.vercel.app/socket.io/$1"
-    },
-    {
-      "source": "/(.*)", 
-      "destination": "/index.html"
-    }
-
+    { "source": "/(.*)", "destination": "/" }
+    
   ]
 }

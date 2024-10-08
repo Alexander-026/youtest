@@ -11,7 +11,7 @@ const useSocket = () => {
         if (user) {
           const socket = io(
             // import.meta.env.VITE_LOCAL_URL, 
-            import.meta.env.VITE_BASE_URL, 
+            `${import.meta.env.VITE_BASE_URL}/public`, 
             {
             query: {
               userId: user.id,
