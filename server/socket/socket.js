@@ -8,8 +8,8 @@ const app = express();
 
 app.use(
   cors({
-    origin: [process.env.CLIENT_ORIGIN],
-    // origin: [process.env.HOST_ORIGIN, "http://192.168.178.23:5173"],
+    // origin: [process.env.CLIENT_ORIGIN],
+    origin: [process.env.HOST_ORIGIN, "http://192.168.178.23:5173"],
     // origin: ["http://192.168.178.23:5173"],
     methods: "GET,POST,PUT,DELETE", 
     credentials: true,
