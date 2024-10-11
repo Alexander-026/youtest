@@ -13,7 +13,6 @@ dist
 data
 dist-ssr
 *.local
-vercel.json
 
 # Editor directories and files
 .vscode/*

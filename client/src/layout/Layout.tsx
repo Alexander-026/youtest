@@ -9,10 +9,10 @@ import { useCallback, useEffect } from "react"
 import { useAppDispatch } from "../app/hooks"
 import { userSlice } from "../features/user/userSlice"
 import { useNavigate } from "react-router-dom"
-// import useSocket from "../hooks/useSocket"
+import useSocket from "../hooks/useSocket"
 
 const Layout = () => {
-  // useSocket()
+  useSocket()
   const [token, setToken, removeToken] = useLocalStorage("accessToken")
   const [refreshToken, setRefreshToken, removeRefreshToken] =
     useLocalStorage("refreshToken")
