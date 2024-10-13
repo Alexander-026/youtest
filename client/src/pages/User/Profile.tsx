@@ -138,13 +138,13 @@ const Profile = () => {
             <Alert severity="error">{(error as any).data.message}</Alert>
           )}
           <Grid width={"100%"} container spacing={2}>
-            <Grid textAlign="center" xs={12}>
+            {/* <Grid textAlign="center" xs={12}>
               <Upload
                 value={getValues().image}
                 setFormData={setFormData}
                 setValue={setValue}
               />
-            </Grid>
+            </Grid> */}
             <Grid md={6} xs={12}>
               <Controller
                 name="firstName"

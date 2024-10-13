@@ -1,24 +1,17 @@
 import express from "express";
 import dotenv from "dotenv";
+dotenv.config();
+import { app, server } from "./socket/socket.js";
 import cookieParser from "cookie-parser";
 import errorMiddleware from "./middlewares/errorMiddleware.js";
 
-dotenv.config();
 const port = process.env.PORT || 6262;
-
 import connectDB from "./config/db.js";
 import userRoutes from "./routes/userRoutes.js";
 import uploadRoutes from "./routes/uploadRoutes.js";
 import wordPairsRoutes from "./routes/wordPairCardRouter.js";
 import contactRoutes from "./routes/contactRouter.js";
-import { app, server } from "./socket/socket.js";
 
-// app.use(
-//   cors({
-//     origin: [process.env.CLIENT_ORIGIN],
-//     credentials: true,
-//   })
-// );
 
 app.use(express.json());
 app.use(cookieParser());

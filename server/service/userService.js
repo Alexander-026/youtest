@@ -201,9 +201,13 @@ const sendFriendRequestService = async (myUserId, senderUserId) => {
   }
   // Добавляем запрос в массив friendRequests
   targetUser.friendRequests.push({ userId: myUserId });
+  const newReq = targetUser.friendRequests.find((u) => `${u.userId}` === myUserId)
+  
   // Сохраняем изменения
   await targetUser.save();
-  return { success: true, message: "Запрос в друзья отправлен" };
+
+  
+  return { success: true, message: "Запрос в друзья отправлен", newReq};
 };
 
 const acceptFriendshipService = async (myUserId, senderUserId) => {
@@ -253,7 +257,7 @@ const cancelFriendshipService = async (myUserId, senderUserId) => {
   const alreadyFriend = myData.friends.some(
     (request) => request.userId.toString() === senderUserId
   );
-  console.log(" myData.friends",  myData.friends)
+ 
 
   if (!alreadyRequested && !alreadyFriend) {
     throw ApiError.Conflict("Sender not found!");

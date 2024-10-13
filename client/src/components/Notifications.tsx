@@ -1,4 +1,4 @@
-import React, { useEffect } from "react"
+import React, { useCallback, useEffect, useState } from "react"
 import { useAppDispatch, useAppSelector } from "../app/hooks"
 import {
   Badge,
@@ -29,9 +29,13 @@ import {
   userSlice,
 } from "../features/user/userSlice"
 import dayjs from "dayjs"
+import { useSocketContext } from "../context/socketContext"
+import type { Friend } from "../types/user"
 
 const Notifications = () => {
   const { user } = useAppSelector(state => state.user)
+  const { socket } = useSocketContext()
+  const {addNewFriendRequest} = userSlice.actions
   const dispatch = useAppDispatch()
   const [getUsersById, { data, isError, isLoading }] = useGetUsersByIdMutation()
   const [acceptFriendsh, { isError: acceptError, data: acceptData }] =
@@ -48,6 +52,8 @@ const Notifications = () => {
     setAnchorEl(null)
   }
 
+
+
   useEffect(() => {
     if (user) {
       const userIds = user.friendRequests.map(r => r.userId)
@@ -57,6 +63,28 @@ const Notifications = () => {
       console.log("userIds", userIds)
     }
   }, [getUsersById, user])
+
+   // Обработка нового запроса в друзья через сокет
+   const handlerNewRegs = useCallback(() => {
+    socket?.on("newFriendRequest", (newReq: Friend) => {
+      console.log("newReq client", newReq)
+      dispatch(addNewFriendRequest(newReq))
+    })
+
+    // Очищаем обработчик при размонтировании компонента
+    return () => {
+      socket?.off("newFriendRequest")
+    }
+  }, [socket])
+
+  // Вызываем обработчик событий сокета
+  useEffect(() => {
+    const unsubscribe = handlerNewRegs()
+
+    return () => {
+      unsubscribe() // Отписка от события при размонтировании
+    }
+  }, [handlerNewRegs])
 
   return (
     <>

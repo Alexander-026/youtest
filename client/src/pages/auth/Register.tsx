@@ -7,6 +7,7 @@ import {
   Alert,
   IconButton,
   TextField,
+  styled,
 } from "@mui/material"
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider"
 import { DateField } from "@mui/x-date-pickers/DateField"
@@ -20,12 +21,17 @@ import { yupResolver } from "@hookform/resolvers/yup"
 import { MdVisibility } from "react-icons/md"
 import { MdVisibilityOff } from "react-icons/md"
 import dayjs from "dayjs"
-import {
-  useRegisterMutation,
-} from "../../app/api/usersApiSlice"
+import { useRegisterMutation } from "../../app/api/usersApiSlice"
 import { useAppDispatch } from "../../app/hooks"
 import useLocalStorage from "../../hooks/useLocalStorage"
 import { userSlice } from "../../features/user/userSlice"
+import { IoHome } from "react-icons/io5"
+
+const StyledLink = styled(Link)({
+  position: "absolute",
+  top: "1rem",
+  left: "1rem",
+})
 
 const Register = () => {
   const [visibility, setVisibility] = useState<boolean>(false)
@@ -82,15 +88,20 @@ const Register = () => {
     return <Navigate to="/" replace />
   }
 
-
-
   return (
     <Stack
+      height={"100vh"}
       flexGrow={1}
       direction={"row"}
       alignItems="center"
       justifyContent="center"
+      position={"relative"}
     >
+      <StyledLink to={"/"}>
+        <IconButton>
+          <IoHome />
+        </IconButton>
+      </StyledLink>
       <Paper
         sx={{
           padding: "1rem",
@@ -225,7 +236,7 @@ const Register = () => {
 
             <Link to="/login">
               <Typography align="right" color="blue">
-                Anmelden
+                Login
               </Typography>
             </Link>
           </Stack>

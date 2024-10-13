@@ -1,4 +1,5 @@
 
+import type { Socket } from "socket.io-client"
 import type { DecodedUser, Friend } from "../../types/user"
 
 import type { IUserState } from "./userSlice"
@@ -9,18 +10,8 @@ export const onUser: CaseReducer<IUserState, PayloadAction<DecodedUser>> = (
   action,
 ) => {
   if (action.payload) {
+
     state.user = action.payload
-    
-    // socket.io.opts.query = {
-    //   userId: action.payload.id
-    // }
-
-    // socket.on("getOnlineUsers", (users) => {
-    //    console.log("userssssss", users)
-    // });
-
-
-  
   }
 }
 
@@ -58,4 +49,14 @@ PayloadAction<{ sender: Friend }>
     (request) => request.userId !== sender.userId
   );
 
+}
+
+
+
+export const addNewFriendRequest:CaseReducer<
+IUserState,
+PayloadAction<Friend>
+> = (state, action) => {
+  if (!state.user) return
+  state.user.friendRequests.push(action.payload)
 }

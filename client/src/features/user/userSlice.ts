@@ -3,6 +3,7 @@ import {
   logOut,
   acceptFriendship,
   cancelFriendship,
+  addNewFriendRequest
 } from "./userReducers"
 import { createSlice } from "@reduxjs/toolkit"
 import type { DecodedUser } from "./../../types/user"
@@ -23,6 +24,7 @@ export const userSlice = createSlice({
     logOut,
     acceptFriendship,
     cancelFriendship,
+    addNewFriendRequest
   },
 })
 

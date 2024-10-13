@@ -12,6 +12,7 @@ import {
 } from "../service/userService.js";
 import { validationResult } from "express-validator";
 import ApiError from "../exceptions/apiError.js";
+import { getReceiverSocketId, io } from "../socket/socket.js";
 
 const saveCookie = (res, tokenName, token) => {
   res.cookie(tokenName, token, {
@@ -121,7 +122,17 @@ const getUsers = async (req, res, next) => {
 const sendFriendRequestController = async (req, res, next) => {
   try {
     const {myUserId, senderUserId } = req.body
+    const receiverSocketId = getReceiverSocketId(senderUserId);
+
+  
     const result = await sendFriendRequestService(myUserId, senderUserId)
+    console.log("receiverSocketId", receiverSocketId)
+    console.log("newReq", result.newReq)
+
+    if (receiverSocketId) {
+			// io.to(<socket_id>).emit() used to send events to specific client
+			io.to(receiverSocketId).emit("newFriendRequest", result.newReq);
+		}
     return res.json(result);
   } catch (error) {
     next(error);

@@ -17,12 +17,14 @@ import {
 } from "../../app/api/usersApiSlice"
 import LoaderWrapper from "../../components/LoaderWrapper"
 import MyAvatar from "../../components/MyAvatar"
-import React from "react"
+import React, { useState } from "react"
 import { useAppSelector } from "../../app/hooks"
 
 const Users = () => {
   const { user } = useAppSelector(state => state.user)
   const { data: users, isLoading, isError, error } = useGetUsersQuery()
+   // Состояние для отслеживания текущего загружаемого пользователя
+   const [loadingUserId, setLoadingUserId] = useState<string | null>(null)
   const [
     friendRequest,
     { data: result, error: friendError, isLoading: friendLoading },
@@ -37,7 +39,21 @@ const Users = () => {
     console.log((error as any).data.message)
   }
 
-  const loading = isLoading || friendLoading
+  const handleFriendRequest = (otherUserId: string) => {
+    setLoadingUserId(otherUserId)
+    friendRequest({
+      myUserId: user!.id,
+      senderUserId: otherUserId,
+    }).finally(() => setLoadingUserId(null))
+  }
+
+  const handleCancelRequest = (otherUserId: string) => {
+    setLoadingUserId(otherUserId)
+    cancelRequest({
+      myUserId: user!.id,
+      senderUserId: otherUserId,
+    }).finally(() => setLoadingUserId(null))
+  }
 
   return (
     <LoaderWrapper loading={isLoading} data={users}>
@@ -50,7 +66,7 @@ const Users = () => {
           const requestSent = !!otherUser.friendRequests.find(
             f => f.userId === user!.id,
           )
-          const allreadyFriend = !!otherUser.friends.find(
+          const alreadyFriend = !!otherUser.friends.find(
             f => f.userId === user!.id,
           )
 
@@ -67,40 +83,32 @@ const Users = () => {
                 />
                 <Tooltip
                   title={
-                    allreadyFriend
+                    alreadyFriend
                       ? "Delete From Friends"
-                      : !requestSent && !allreadyFriend
+                      : !requestSent && !alreadyFriend
                         ? "Add to friends"
                         : ""
                   }
                 >
                   <span>
                     <Button
-                      disabled={requestSent || allreadyFriend || loading}
+                      disabled={requestSent || alreadyFriend || loadingUserId === otherUser.id}
                       onClick={() => {
-                        if (!requestSent && !allreadyFriend) {
-                          friendRequest({
-                            myUserId: user!.id,
-                            senderUserId: otherUser.id,
-                          })
-                        }
-
-                        if (!requestSent && allreadyFriend) {
-                          cancelRequest({
-                            myUserId: user!.id,
-                            senderUserId: otherUser.id,
-                          })
+                        if (!requestSent && !alreadyFriend) {
+                          handleFriendRequest(otherUser.id)
+                        } else if (!requestSent && alreadyFriend) {
+                          handleCancelRequest(otherUser.id)
                         }
                       }}
                       size="small"
                       variant="outlined"
-                      startIcon={loading && <CircularProgress size={25} />}
+                      startIcon={loadingUserId === otherUser.id && <CircularProgress size={25} />}
                     >
-                      {requestSent && !allreadyFriend
-                        ? "Under consideration"
-                        : !requestSent && allreadyFriend
+                      {requestSent && !alreadyFriend
+                        ? "Sent"
+                        : !requestSent && alreadyFriend
                           ? "Already friends"
-                          : "Make contact"}
+                          : "Send friendship"}
                     </Button>
                   </span>
                 </Tooltip>

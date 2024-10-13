@@ -4,6 +4,7 @@ import {
   IconButton,
   Paper,
   Stack,
+  styled,
   TextField,
   Typography,
 } from "@mui/material"
@@ -20,6 +21,13 @@ import type { LoginUser } from "../../types/user"
 import useLocalStorage from "../../hooks/useLocalStorage"
 import { useAppDispatch } from "../../app/hooks"
 import { userSlice } from "../../features/user/userSlice"
+import { IoHome } from "react-icons/io5"
+
+const StyledLink = styled(Link)({
+  position: "absolute",
+  top: "1rem",
+  left: "1rem",
+})
 
 const Login = () => {
   // State for controlling password visibility
@@ -70,17 +78,20 @@ const Login = () => {
     return <Navigate to="/" replace />
   }
 
-  
-
-
-
   return (
     <Stack
+      height={"100vh"}
       flexGrow={1}
       direction={"row"}
       alignItems="center"
       justifyContent="center"
+      position="relative"
     >
+       <StyledLink to={"/"}>
+        <IconButton>
+          <IoHome />
+        </IconButton>
+      </StyledLink>
       <Paper
         sx={{
           padding: "1rem",

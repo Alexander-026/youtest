@@ -1,4 +1,6 @@
 import { Server } from "socket.io";
+import dotenv from "dotenv";
+dotenv.config();
 import cors from "cors";
 import http from "http";
 import express from "express";
@@ -6,10 +8,10 @@ import { getUsersByIdService } from "../service/userService.js";
 
 const app = express();
 
+
 app.use(
   cors({
     origin: [process.env.CLIENT_ORIGIN],
-    methods: "GET,POST,PUT,DELETE",
     credentials: true,
   })
 );
@@ -33,6 +35,7 @@ io.on("connection", async (socket) => {
 
   const userId = socket.handshake.query.userId;
   if (userId != "undefined") userSocketMap[userId] = socket.id;
+
 
   const result = await getUsersByIdService(Object.keys(userSocketMap));
 

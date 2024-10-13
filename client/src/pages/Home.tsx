@@ -122,7 +122,7 @@ const Home = () => {
   }
 
   return (
-    <Box>
+    <Box flexGrow={1}>
       <Typography>Home</Typography>
 
       <form onSubmit={handleSubmit(onSubmit)}>
