@@ -28,8 +28,7 @@ export const makeStore = (preloadedState?: Partial<RootState>) => {
       return getDefaultMiddleware().concat(apiSlice.middleware)
     },
     preloadedState,
-    devTools: import.meta.env.VITE_NODE_ENV === "production" ? false : true,
-    // devTools:  true,
+    devTools: true,
   })
   // configure listeners using the provided defaults
   // optional, but required for `refetchOnFocus`/`refetchOnReconnect` behaviors

@@ -94,7 +94,7 @@ const Header = () => {
           justifyContent="space-between"
         >
           <Link to="/">
-            <Typography variant="h6" component="div">
+            <Typography variant="h5" component="h6" >
               YouTest
             </Typography>
           </Link>

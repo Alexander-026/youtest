@@ -4,9 +4,10 @@ import {
   IconButton,
   Paper,
   Stack,
-  styled,
   TextField,
   Typography,
+  Skeleton,
+  Tooltip,
 } from "@mui/material"
 import type { SubmitHandler } from "react-hook-form"
 import { Controller, useForm } from "react-hook-form"
@@ -19,18 +20,13 @@ import { Link, Navigate, useNavigate } from "react-router-dom"
 import { useLoginMutation } from "../../app/api/usersApiSlice"
 import type { LoginUser } from "../../types/user"
 import useLocalStorage from "../../hooks/useLocalStorage"
-import { useAppDispatch } from "../../app/hooks"
+import { useAppDispatch, useAppSelector } from "../../app/hooks"
 import { userSlice } from "../../features/user/userSlice"
-import { IoHome } from "react-icons/io5"
-
-const StyledLink = styled(Link)({
-  position: "absolute",
-  top: "1rem",
-  left: "1rem",
-})
+import { TiArrowBack } from "react-icons/ti"
 
 const Login = () => {
   // State for controlling password visibility
+  const { user } = useAppSelector(state => state.user)
   const [visibility, setVisibility] = useState<boolean>(false)
   const [login, { isLoading, error }] = useLoginMutation()
   const navigate = useNavigate()
@@ -46,6 +42,7 @@ const Login = () => {
     handleSubmit,
     reset,
     formState: { errors, isValid },
+    getValues,
   } = useForm<LoginUser>({
     mode: "all",
     resolver: yupResolver(userLoginSchema),
@@ -74,7 +71,7 @@ const Login = () => {
     }
   }
 
-  if (token) {
+  if (user || token) {
     return <Navigate to="/" replace />
   }
 
@@ -85,13 +82,7 @@ const Login = () => {
       direction={"row"}
       alignItems="center"
       justifyContent="center"
-      position="relative"
     >
-       <StyledLink to={"/"}>
-        <IconButton>
-          <IoHome />
-        </IconButton>
-      </StyledLink>
       <Paper
         sx={{
           padding: "1rem",
@@ -102,53 +93,72 @@ const Login = () => {
         <form onSubmit={handleSubmit(onSubmit)}>
           <Stack direction="column" gap={{ xs: 2, sm: 3 }}>
             <Typography variant="h5" textAlign="center">
-              Anmelden
+              Login
             </Typography>
 
             {error && (
               <Alert severity="error">{(error as any).data.message}</Alert>
             )}
 
-            {/* Component for controlling the email field */}
-            <Controller
-              name="email"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  label="Email"
-                  size="small"
-                  error={!!errors.email}
-                  helperText={errors.email?.message}
+            {isLoading ? (
+              <>
+                {Object.keys(getValues()).map(keyName => (
+                  <Skeleton
+                    key={keyName}
+                    variant="rectangular"
+                    width="100%"
+                    height={40}
+                    sx={{ borderRadius: "4px" }}
+                  />
+                ))}
+              </>
+            ) : (
+              <>
+                <Controller
+                  name="email"
+                  control={control}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      label="Email"
+                      size="small"
+                      error={!!errors.email}
+                      helperText={errors.email?.message}
+                    />
+                  )}
                 />
-              )}
-            />
 
-            {/* Component for controlling the password field */}
-            <Controller
-              name="password"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  label="Passwort"
-                  size="small"
-                  error={!!errors.password}
-                  helperText={errors.password?.message}
-                  type={visibility ? "text" : "password"}
-                  InputProps={{
-                    endAdornment: (
-                      <IconButton
-                        size="small"
-                        onClick={() => setVisibility(pre => !pre)}
-                      >
-                        {visibility ? <MdVisibilityOff /> : <MdVisibility />}
-                      </IconButton>
-                    ),
-                  }}
+                {/* Component for controlling the password field */}
+                <Controller
+                  name="password"
+                  control={control}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      label="Passwort"
+                      size="small"
+                      error={!!errors.password}
+                      helperText={errors.password?.message}
+                      type={visibility ? "text" : "password"}
+                      InputProps={{
+                        endAdornment: (
+                          <IconButton
+                            size="small"
+                            onClick={() => setVisibility(pre => !pre)}
+                          >
+                            {visibility ? (
+                              <MdVisibilityOff />
+                            ) : (
+                              <MdVisibility />
+                            )}
+                          </IconButton>
+                        ),
+                      }}
+                    />
+                  )}
                 />
-              )}
-            />
+              </>
+            )}
 
             {/* Button for submitting the form */}
             <Button
@@ -160,12 +170,25 @@ const Login = () => {
               {isLoading ? "Loading" : "Log in"}
             </Button>
 
-            {/* Link for navigating to the registration page */}
-            <Link to="/register">
-              <Typography align="right" color="blue">
-                Registration
-              </Typography>
-            </Link>
+            <Stack
+              flexDirection="row"
+              alignItems="center"
+              justifyContent="space-between"
+            >
+              <Tooltip title="Go to Homepage">
+                <Link to={"/"}>
+                  <IconButton>
+                    <TiArrowBack />
+                  </IconButton>
+                </Link>
+              </Tooltip>
+
+              <Link to="/register">
+                <Typography align="right" color="blue">
+                  Registration
+                </Typography>
+              </Link>
+            </Stack>
           </Stack>
         </form>
       </Paper>

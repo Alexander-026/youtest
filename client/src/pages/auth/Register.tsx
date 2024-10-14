@@ -7,7 +7,8 @@ import {
   Alert,
   IconButton,
   TextField,
-  styled,
+  Skeleton,
+  Tooltip,
 } from "@mui/material"
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider"
 import { DateField } from "@mui/x-date-pickers/DateField"
@@ -22,18 +23,13 @@ import { MdVisibility } from "react-icons/md"
 import { MdVisibilityOff } from "react-icons/md"
 import dayjs from "dayjs"
 import { useRegisterMutation } from "../../app/api/usersApiSlice"
-import { useAppDispatch } from "../../app/hooks"
+import { useAppDispatch, useAppSelector } from "../../app/hooks"
 import useLocalStorage from "../../hooks/useLocalStorage"
 import { userSlice } from "../../features/user/userSlice"
-import { IoHome } from "react-icons/io5"
-
-const StyledLink = styled(Link)({
-  position: "absolute",
-  top: "1rem",
-  left: "1rem",
-})
+import { TiArrowBack } from "react-icons/ti"
 
 const Register = () => {
+  const { user } = useAppSelector(state => state.user)
   const [visibility, setVisibility] = useState<boolean>(false)
 
   const [register, { isLoading, error }] = useRegisterMutation()
@@ -48,6 +44,7 @@ const Register = () => {
     control,
     handleSubmit,
     setValue,
+    getValues,
     reset,
     formState: { errors, isValid, isDirty },
   } = useForm<RegisterUser>({
@@ -59,7 +56,7 @@ const Register = () => {
       firstName: "",
       lastName: "",
       birthDate: "",
-      image: "",
+      // image: "",
     },
   })
 
@@ -84,9 +81,11 @@ const Register = () => {
     }
   }
 
-  if (token) {
+  if (user || token) {
     return <Navigate to="/" replace />
   }
+
+  console.log("getValues", Object.keys(getValues()))
 
   return (
     <Stack
@@ -95,13 +94,7 @@ const Register = () => {
       direction={"row"}
       alignItems="center"
       justifyContent="center"
-      position={"relative"}
     >
-      <StyledLink to={"/"}>
-        <IconButton>
-          <IoHome />
-        </IconButton>
-      </StyledLink>
       <Paper
         sx={{
           padding: "1rem",
@@ -113,110 +106,131 @@ const Register = () => {
           <Stack direction="column" gap={{ xs: 2, sm: 3 }}>
             {/* Form title */}
             <Typography variant="h5" align="center">
-              Registrierung
+              Registration
             </Typography>
 
             {error && (
               <Alert severity="error">{(error as any).data.message}</Alert>
             )}
 
-            <Controller
-              name="firstName"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  label="Vorname"
-                  size="small"
-                  error={!!errors.firstName}
-                  helperText={errors.firstName?.message}
-                />
-              )}
-            />
-
-            <Controller
-              name="lastName"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  label="Nachname"
-                  size="small"
-                  error={!!errors.lastName}
-                  helperText={errors.lastName?.message}
-                />
-              )}
-            />
-            <Controller
-              name="birthDate"
-              control={control}
-              render={({ field }) => (
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <DateField
-                    {...field}
-                    label="Geburtsdatum"
-                    name="birthDate"
-                    size="small"
-                    value={
-                      field.value || errors.birthDate
-                        ? dayjs(field.value)
-                        : null
-                    }
-                    onChange={date => {
-                      if (date) {
-                        field.onChange(dayjs(date).format("YYYY-MM-DD"))
-                      }
-                    }}
-                    color={errors.birthDate ? "error" : "primary"}
-                    onClear={() => setValue("birthDate", "")}
-                    disableFuture
-                    format="DD.MM.YYYY"
-                    helperText={errors.birthDate?.message}
-                    clearable={!!field.value}
-                    fullWidth
+            {isLoading ? (
+              <>
+                {Object.keys(getValues()).map(keyName => (
+                  <Skeleton
+                    key={keyName}
+                    variant="rectangular"
+                    width="100%"
+                    height={40}
+                    sx={{ borderRadius: "4px" }}
                   />
-                </LocalizationProvider>
-              )}
-            />
-
-            <Controller
-              name="email"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  label="Email"
-                  size="small"
-                  error={!!errors.email}
-                  helperText={errors.email?.message}
+                ))}
+              </>
+            ) : (
+              <>
+                <Controller
+                  name="firstName"
+                  control={control}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      label="First Name"
+                      size="small"
+                      error={!!errors.firstName}
+                      helperText={errors.firstName?.message}
+                    />
+                  )}
                 />
-              )}
-            />
 
-            <Controller
-              name="password"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  label="Passwort"
-                  size="small"
-                  error={!!errors.password}
-                  helperText={errors.password?.message}
-                  type={visibility ? "text" : "password"}
-                  InputProps={{
-                    endAdornment: (
-                      <IconButton
+                <Controller
+                  name="lastName"
+                  control={control}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      label="Last Name"
+                      size="small"
+                      error={!!errors.lastName}
+                      helperText={errors.lastName?.message}
+                    />
+                  )}
+                />
+                <Controller
+                  name="birthDate"
+                  control={control}
+                  render={({ field }) => (
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <DateField
+                        {...field}
+                        label="Birth Date"
+                        name="birthDate"
                         size="small"
-                        onClick={() => setVisibility(pre => !pre)}
-                      >
-                        {visibility ? <MdVisibilityOff /> : <MdVisibility />}
-                      </IconButton>
-                    ),
-                  }}
+                        value={
+                          field.value || errors.birthDate
+                            ? dayjs(field.value)
+                            : null
+                        }
+                        onChange={date => {
+                          if (date) {
+                            field.onChange(dayjs(date).format("YYYY-MM-DD"))
+                          }
+                        }}
+                        color={errors.birthDate ? "error" : "primary"}
+                        onClear={() => setValue("birthDate", "")}
+                        disableFuture
+                        format="DD.MM.YYYY"
+                        helperText={errors.birthDate?.message}
+                        clearable={!!field.value}
+                        fullWidth
+                      />
+                    </LocalizationProvider>
+                  )}
                 />
-              )}
-            />
+
+                <Controller
+                  name="email"
+                  control={control}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      label="Email"
+                      size="small"
+                      error={!!errors.email}
+                      helperText={errors.email?.message}
+                    />
+                  )}
+                />
+
+                <Controller
+                  name="password"
+                  control={control}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      label="Password"
+                      size="small"
+                      error={!!errors.password}
+                      helperText={errors.password?.message}
+                      type={visibility ? "text" : "password"}
+                      InputProps={{
+                        endAdornment: (
+                          <IconButton
+                            size="small"
+                            onClick={() => setVisibility(pre => !pre)}
+                          >
+                            {visibility ? (
+                              <MdVisibilityOff />
+                            ) : (
+                              <MdVisibility />
+                            )}
+                          </IconButton>
+                        ),
+                      }}
+                    />
+                  )}
+                />
+              </>
+            )}
+
             <Button
               disabled={!isDirty}
               variant="outlined"
@@ -234,11 +248,25 @@ const Register = () => {
               {isLoading ? "Loading" : "Registrieren"}
             </Button>
 
-            <Link to="/login">
-              <Typography align="right" color="blue">
-                Login
-              </Typography>
-            </Link>
+            <Stack
+              flexDirection="row"
+              alignItems="center"
+              justifyContent="space-between"
+            >
+              <Tooltip title="Go to Homepage">
+                <Link to={"/"}>
+                  <IconButton>
+                    <TiArrowBack />
+                  </IconButton>
+                </Link>
+              </Tooltip>
+
+              <Link to="/login">
+                <Typography align="right" color="blue">
+                  Login
+                </Typography>
+              </Link>
+            </Stack>
           </Stack>
         </form>
       </Paper>

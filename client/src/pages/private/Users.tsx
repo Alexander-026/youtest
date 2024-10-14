@@ -9,6 +9,9 @@ import {
   Tooltip,
   Typography,
   CircularProgress,
+  Modal,
+  Stack,
+  Box,
 } from "@mui/material"
 import {
   useFriendRequestMutation,
@@ -20,11 +23,25 @@ import MyAvatar from "../../components/MyAvatar"
 import React, { useState } from "react"
 import { useAppSelector } from "../../app/hooks"
 
+type ModalType = "friendRequest" | "cancelRequest"
+
+const style = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 400,
+  bgcolor: "background.paper",
+  boxShadow: 24,
+  p: 4,
+}
+
 const Users = () => {
   const { user } = useAppSelector(state => state.user)
   const { data: users, isLoading, isError, error } = useGetUsersQuery()
-   // Состояние для отслеживания текущего загружаемого пользователя
-   const [loadingUserId, setLoadingUserId] = useState<string | null>(null)
+  // Состояние для отслеживания текущего загружаемого пользователя
+  const [loadingUserId, setLoadingUserId] = useState<string | null>(null)
+  const [showModal, setShowModal] = useState<ModalType | null>(null)
   const [
     friendRequest,
     { data: result, error: friendError, isLoading: friendLoading },
@@ -39,24 +56,72 @@ const Users = () => {
     console.log((error as any).data.message)
   }
 
+  const handleClose = () => {
+    setLoadingUserId(null)
+    setShowModal(null)
+  }
+
   const handleFriendRequest = (otherUserId: string) => {
-    setLoadingUserId(otherUserId)
     friendRequest({
       myUserId: user!.id,
       senderUserId: otherUserId,
-    }).finally(() => setLoadingUserId(null))
+    }).finally(() => handleClose())
   }
 
   const handleCancelRequest = (otherUserId: string) => {
-    setLoadingUserId(otherUserId)
     cancelRequest({
-      myUserId: user!.id,
-      senderUserId: otherUserId,
-    }).finally(() => setLoadingUserId(null))
+      myUserId: otherUserId ,
+      senderUserId: user!.id,
+    }).finally(() => handleClose())
   }
 
   return (
     <LoaderWrapper loading={isLoading} data={users}>
+      <Modal
+        onClose={handleClose}
+        open={!!showModal}
+        aria-labelledby="modal-modal-title"
+      >
+        <Box sx={style}>
+          <Typography
+            id="modal-modal-title"
+            variant="h6"
+            component="h2"
+            textAlign="center"
+            mb={"2rem"}
+          >
+            {showModal === "friendRequest" &&
+              "Are you sure you want to send a friend request?"}
+            {showModal === "cancelRequest" && 
+              "Are you sure you want to cancel the friendship?"}
+          </Typography>
+
+          <Stack
+            flexDirection="row"
+            alignItems={"center"}
+            justifyContent={"space-between"}
+          >
+            <Button variant="contained" onClick={handleClose} color="error">
+              No
+            </Button>
+            <Button
+              variant="outlined"
+              onClick={() => {
+                if (showModal === "friendRequest") {
+                  console.log("idUserr sender", loadingUserId)
+                  loadingUserId && handleFriendRequest(loadingUserId)
+                } else if (showModal === "cancelRequest") {
+                  console.log("idUserr sender", loadingUserId)
+                  loadingUserId && handleCancelRequest(loadingUserId)
+                }
+              }}
+              color="success"
+            >
+              Yes
+            </Button>
+          </Stack>
+        </Box>
+      </Modal>
       <Typography align="center" variant="h4">
         Users
       </Typography>
@@ -70,7 +135,6 @@ const Users = () => {
             f => f.userId === user!.id,
           )
 
-        
           return (
             <React.Fragment key={otherUser.id}>
               <ListItem>
@@ -81,37 +145,51 @@ const Users = () => {
                   primary={`${otherUser.firstName} ${otherUser.lastName}`}
                   secondary={<Typography>{otherUser.birthDate}</Typography>}
                 />
-                <Tooltip
-                  title={
-                    alreadyFriend
-                      ? "Delete From Friends"
-                      : !requestSent && !alreadyFriend
-                        ? "Add to friends"
-                        : ""
-                  }
-                >
-                  <span>
-                    <Button
-                      disabled={requestSent || alreadyFriend || loadingUserId === otherUser.id}
-                      onClick={() => {
-                        if (!requestSent && !alreadyFriend) {
-                          handleFriendRequest(otherUser.id)
-                        } else if (!requestSent && alreadyFriend) {
-                          handleCancelRequest(otherUser.id)
+                   {(requestSent || alreadyFriend) && (
+                      <Button
+                        size="small"
+                        variant="outlined"
+                        color={alreadyFriend ? "error" : requestSent ? "secondary" : "error"}
+                        onClick={() => {
+                          setLoadingUserId(otherUser.id)
+                          setShowModal("cancelRequest")
+                        }}
+                        disabled={
+                          loadingUserId === otherUser.id
                         }
-                      }}
-                      size="small"
-                      variant="outlined"
-                      startIcon={loadingUserId === otherUser.id && <CircularProgress size={25} />}
-                    >
-                      {requestSent && !alreadyFriend
-                        ? "Sent"
-                        : !requestSent && alreadyFriend
-                          ? "Already friends"
-                          : "Send friendship"}
-                    </Button>
-                  </span>
-                </Tooltip>
+                        startIcon={
+                          loadingUserId === otherUser.id && (
+                            <CircularProgress size={25} />
+                          )
+                        }
+                      >
+                        {alreadyFriend &&  "Delete From Friends"}
+                        {requestSent && "Under review"}
+                      </Button>
+                    )}
+
+                    {!requestSent && !alreadyFriend && (
+                      <Button
+                        disabled={
+                          requestSent ||
+                          alreadyFriend ||
+                          loadingUserId === otherUser.id
+                        }
+                        onClick={() => {
+                          setLoadingUserId(otherUser.id)
+                          setShowModal("friendRequest")
+                        }}
+                        size="small"
+                        variant="outlined"
+                        startIcon={
+                          loadingUserId === otherUser.id && (
+                            <CircularProgress size={25} />
+                          )
+                        }
+                      >
+                        Set contact
+                      </Button>
+                    )}
               </ListItem>
               <Divider variant="inset" component="li" />
             </React.Fragment>

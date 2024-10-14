@@ -85,7 +85,7 @@ export const userApiSlice = apiSlice.injectEndpoints({
         method: "POST",
         body: data,
       }),
-      invalidatesTags: ["friendRequests"]
+      invalidatesTags: ["friendRequests", "users"]
     }),
     cancelFriendship: builder.mutation<any, {myUserId:string, senderUserId:string}>({
       query: (data) => ({
@@ -93,7 +93,7 @@ export const userApiSlice = apiSlice.injectEndpoints({
         method: "POST",
         body: data,
       }),
-      invalidatesTags: ["friendRequests"]
+      invalidatesTags: ["users"]
     }),
     getUsersById: builder.mutation<Pick<DecodedUser, "firstName" | "lastName" | "id" | "image">[], {userIds: string[]}>({
       query: (data) => {

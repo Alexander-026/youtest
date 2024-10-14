@@ -126,9 +126,6 @@ const sendFriendRequestController = async (req, res, next) => {
 
   
     const result = await sendFriendRequestService(myUserId, senderUserId)
-    console.log("receiverSocketId", receiverSocketId)
-    console.log("newReq", result.newReq)
-
     if (receiverSocketId) {
 			// io.to(<socket_id>).emit() used to send events to specific client
 			io.to(receiverSocketId).emit("newFriendRequest", result.newReq);
