@@ -17,13 +17,19 @@ import {
   useFriendRequestMutation,
   useCancelFriendshipMutation,
   useGetUsersQuery,
+  useAcceptFriendshipMutation,
 } from "../../app/api/usersApiSlice"
 import LoaderWrapper from "../../components/LoaderWrapper"
 import MyAvatar from "../../components/MyAvatar"
-import React, { useState } from "react"
-import { useAppSelector } from "../../app/hooks"
+import React, { useEffect, useState } from "react"
+import { useAppDispatch, useAppSelector } from "../../app/hooks"
+import {
+  cancelFriendshipAction,
+  acceptFriendshipAction,
+} from "../../features/user/userSlice"
+import type { Notification } from "../../types/user"
 
-type ModalType = "friendRequest" | "cancelRequest"
+type ModalType = "friendRequest" | "acceptRequest" | "cancelRequest"
 
 const style = {
   position: "absolute",
@@ -38,14 +44,20 @@ const style = {
 
 const Users = () => {
   const { user } = useAppSelector(state => state.user)
-  const { data: users, isLoading, isError, error } = useGetUsersQuery()
-  // Состояние для отслеживания текущего загружаемого пользователя
+  const dispatch = useAppDispatch()
+  const { data: users, isLoading, isError, error, refetch } = useGetUsersQuery()
   const [loadingUserId, setLoadingUserId] = useState<string | null>(null)
+  const [newNotification, setNewNotification] = useState<
+    Notification | undefined
+  >(undefined)
   const [showModal, setShowModal] = useState<ModalType | null>(null)
   const [
     friendRequest,
     { data: result, error: friendError, isLoading: friendLoading },
   ] = useFriendRequestMutation()
+
+  const [acceptFriendship, { isError: acceptError, data: acceptData }] =
+    useAcceptFriendshipMutation()
 
   const [
     cancelRequest,
@@ -59,21 +71,49 @@ const Users = () => {
   const handleClose = () => {
     setLoadingUserId(null)
     setShowModal(null)
+    setNewNotification(undefined)
   }
 
-  const handleFriendRequest = (otherUserId: string) => {
-    friendRequest({
-      myUserId: user!.id,
-      senderUserId: otherUserId,
-    }).finally(() => handleClose())
+  const handleFriendRequest = (
+    otherUserId: string,
+    notification?: Notification,
+  ) => {
+    if (notification) {
+      console.log("notification", notification)
+      dispatch(acceptFriendshipAction({ sender: notification }))
+      acceptFriendship({
+        myUserId: user!.id,
+        senderUserId: otherUserId,
+      }).finally(() => handleClose())
+    } else {
+      friendRequest({
+        myUserId: user!.id,
+        senderUserId: otherUserId,
+      }).finally(() => handleClose())
+    }
   }
 
-  const handleCancelRequest = (otherUserId: string) => {
-    cancelRequest({
-      myUserId: otherUserId ,
-      senderUserId: user!.id,
-    }).finally(() => handleClose())
+  const handleCancelRequest = (
+    otherUserId: string,
+    notification?: Notification,
+  ) => {
+    if (notification) {
+      dispatch(cancelFriendshipAction(notification.userId))
+      cancelRequest({
+        myUserId: user!.id,
+        senderUserId: otherUserId,
+      }).finally(() => handleClose())
+    } else {
+      cancelRequest({
+        myUserId: user!.id,
+        senderUserId: otherUserId,
+      }).finally(() => handleClose())
+    }
   }
+
+  useEffect(() => {
+    refetch()
+  }, [user?.notifications])
 
   return (
     <LoaderWrapper loading={isLoading} data={users}>
@@ -92,7 +132,9 @@ const Users = () => {
           >
             {showModal === "friendRequest" &&
               "Are you sure you want to send a friend request?"}
-            {showModal === "cancelRequest" && 
+            {showModal === "acceptRequest" &&
+              "Are you sure you want to accept a friend request?"}
+            {showModal === "cancelRequest" &&
               "Are you sure you want to cancel the friendship?"}
           </Typography>
 
@@ -112,7 +154,12 @@ const Users = () => {
                   loadingUserId && handleFriendRequest(loadingUserId)
                 } else if (showModal === "cancelRequest") {
                   console.log("idUserr sender", loadingUserId)
-                  loadingUserId && handleCancelRequest(loadingUserId)
+                  loadingUserId &&
+                    handleCancelRequest(loadingUserId, newNotification)
+                } else if (showModal === "acceptRequest") {
+                  console.log("idUserr sender", loadingUserId)
+                  loadingUserId &&
+                    handleFriendRequest(loadingUserId, newNotification)
                 }
               }}
               color="success"
@@ -128,11 +175,15 @@ const Users = () => {
       {isError && <Alert severity="error">{(error as any).data.message}</Alert>}
       <List sx={{ width: "100%", bgcolor: "background.paper" }}>
         {users?.map(otherUser => {
-          const requestSent = !!otherUser.friendRequests.find(
-            f => f.userId === user!.id,
+          const requestSent = !!otherUser.notifications.find(
+            f => f.userId === user!.id && f.contact,
           )
           const alreadyFriend = !!otherUser.friends.find(
             f => f.userId === user!.id,
+          )
+
+          const notification = user?.notifications.find(
+            n => n.userId === otherUser.id && n.contact,
           )
 
           return (
@@ -145,25 +196,66 @@ const Users = () => {
                   primary={`${otherUser.firstName} ${otherUser.lastName}`}
                   secondary={<Typography>{otherUser.birthDate}</Typography>}
                 />
-                   {(requestSent || alreadyFriend) && (
+                {notification ? (
+                  <Stack>
+                    <Typography>{notification.message}</Typography>
+                    <Stack
+                      flexDirection="row"
+                      alignItems="center"
+                      gap={2}
+                      justifyContent="space-between"
+                    >
+                      <Button
+                        onClick={() => {
+                          setLoadingUserId(notification.userId)
+                          setNewNotification(notification)
+                          setShowModal("cancelRequest")
+                        }}
+                        size="small"
+                        variant="outlined"
+                        color="error"
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        onClick={() => {
+                          setLoadingUserId(notification.userId)
+                          setNewNotification(notification)
+                          setShowModal("acceptRequest")
+                        }}
+                        size="small"
+                        variant="outlined"
+                        color="success"
+                      >
+                        Accept
+                      </Button>
+                    </Stack>
+                  </Stack>
+                ) : (
+                  <>
+                    {(requestSent || alreadyFriend) && (
                       <Button
                         size="small"
                         variant="outlined"
-                        color={alreadyFriend ? "error" : requestSent ? "secondary" : "error"}
+                        color={
+                          alreadyFriend
+                            ? "error"
+                            : requestSent
+                              ? "secondary"
+                              : "error"
+                        }
                         onClick={() => {
                           setLoadingUserId(otherUser.id)
                           setShowModal("cancelRequest")
                         }}
-                        disabled={
-                          loadingUserId === otherUser.id
-                        }
+                        disabled={loadingUserId === otherUser.id}
                         startIcon={
                           loadingUserId === otherUser.id && (
                             <CircularProgress size={25} />
                           )
                         }
                       >
-                        {alreadyFriend &&  "Delete From Friends"}
+                        {alreadyFriend && "Delete From Friends"}
                         {requestSent && "Under review"}
                       </Button>
                     )}
@@ -190,6 +282,8 @@ const Users = () => {
                         Set contact
                       </Button>
                     )}
+                  </>
+                )}
               </ListItem>
               <Divider variant="inset" component="li" />
             </React.Fragment>

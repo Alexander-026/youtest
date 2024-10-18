@@ -7,11 +7,21 @@ export type User = {
     email: string
     image: string
     isAdmin: boolean
-    friendRequests: Friend[]
+    notifications: Notification[]
     friends: Friend[]
   }
   refreshToken: string
   accessToken: string
+}
+
+export type Notification = {
+  _id: string
+  image: string
+  label: string
+  userId: string
+  message: string
+  contact: boolean
+  requestDate: string
 }
 
 export type Friend = {

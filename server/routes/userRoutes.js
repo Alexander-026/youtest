@@ -10,6 +10,7 @@ import {
   acceptFriendshipController,
   cancelFriendshipController,
   getUsersByIdController,
+  deleteNotificationController,
 } from "../controllers/userController.js";
 import { body } from "express-validator";
 import {
@@ -31,12 +32,13 @@ router
   );
 router.post("/login", loginUser);
 router.post("/logout", logoutCurrentUser);
-router.put("/update", updateUser);
+router.put("/update", authMiddleWare, updateUser);
 router.post("/refresh", refreshTokens);
 router.get("/", authMiddleWare,  getUsers);
-router.post("/friendRequest", sendFriendRequestController);
-router.post("/acceptFriendship", acceptFriendshipController);
-router.post("/cancelFriendship", cancelFriendshipController);
+router.post("/friendRequest", authMiddleWare, sendFriendRequestController);
+router.post("/acceptFriendship", authMiddleWare, acceptFriendshipController);
+router.post("/cancelFriendship", authMiddleWare, cancelFriendshipController);
+router.post("/deleteNotification", authMiddleWare, deleteNotificationController);
 router.post("/getUsersById", authMiddleWare, getUsersByIdController)
 
 

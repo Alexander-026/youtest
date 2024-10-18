@@ -3,6 +3,7 @@ import {
   logOut,
   acceptFriendship,
   cancelFriendship,
+  removeNotification,
   addNewFriendRequest
 } from "./userReducers"
 import { createSlice } from "@reduxjs/toolkit"
@@ -24,13 +25,16 @@ export const userSlice = createSlice({
     logOut,
     acceptFriendship,
     cancelFriendship,
-    addNewFriendRequest
+    addNewFriendRequest,
+    removeNotification
   },
 })
 
 export const {
   acceptFriendship: acceptFriendshipAction,
   cancelFriendship: cancelFriendshipAction,
+  removeNotification: removeNotificationAction,
+  addNewFriendRequest: addNewFriendRequestAction,
 } = userSlice.actions
 
 export default userSlice.reducer

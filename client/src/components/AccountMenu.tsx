@@ -10,6 +10,9 @@ import MyAvatar from "./MyAvatar"
 import { useLogoutMutation } from "../app/api/usersApiSlice"
 import { userSlice } from "../features/user/userSlice"
 import useLocalStorage from "../hooks/useLocalStorage"
+import { apiSlice } from "../app/api/apiSlice"
+
+
 
 const AccountMenu = () => {
   const { user } = useAppSelector(state => state.user)
@@ -31,6 +34,7 @@ const AccountMenu = () => {
   const logoutHandler = async () => {
     try {
       dispatch(logOut())
+      dispatch(apiSlice.util.resetApiState());
       removeToken()
       removeRefreshToken()
       navigate("/", { replace: true })

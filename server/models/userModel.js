@@ -29,11 +29,15 @@ const userSchema = mongoose.Schema(
       default: false,
     },
     image: { type: String, default: "" },
-    friendRequests: {
+    notifications: {
       type: [
         {
-          userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" }, // ID пользователя, который отправил запрос
-          requestDate: { type: Date, default: Date.now }, // Дата запроса
+          userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+          image: { type: String, default: "" },
+          label: {type: String, require: true},
+          message: {type: String, require: true},
+          contact: {type: Boolean, default: false},
+          requestDate: { type: Date, default: Date.now },
         },
       ],
       default: [],

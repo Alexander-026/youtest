@@ -93,7 +93,14 @@ export const userApiSlice = apiSlice.injectEndpoints({
         method: "POST",
         body: data,
       }),
-      invalidatesTags: ["users"]
+      invalidatesTags: ["users", "friendRequests"]
+    }),
+    deleteNotification: builder.mutation<any, {myUserId:string, notificationId:string}>({
+      query: (data) => ({
+        url: `${import.meta.env.VITE_USERS_URL}/deleteNotification`,
+        method: "POST",
+        body: data,
+      }),
     }),
     getUsersById: builder.mutation<Pick<DecodedUser, "firstName" | "lastName" | "id" | "image">[], {userIds: string[]}>({
       query: (data) => {
@@ -123,6 +130,7 @@ export const {
   useFriendRequestMutation,
   useAcceptFriendshipMutation,
   useCancelFriendshipMutation,
+  useDeleteNotificationMutation,
   useGetUsersByIdMutation
 
 } = userApiSlice

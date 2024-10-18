@@ -107,15 +107,6 @@ const Header = () => {
                 </IconButton>
               </Link>
               <Notifications/>
-              {/* <Link to="/notifications">
-                
-              </Link> */}
-              {/* <IconButton size="small">
-                  <Badge badgeContent={user.friendRequests.length} color="success">
-                    <IoMdNotificationsOutline color="white"  fontSize={25} />
-                  </Badge>
-                </IconButton>
-              */}
                <AccountMenu />
             </Stack>
           ) : (

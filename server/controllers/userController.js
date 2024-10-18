@@ -9,6 +9,7 @@ import {
   acceptFriendshipService,
   cancelFriendshipService,
   getUsersByIdService,
+  deleteNotificationService,
 } from "../service/userService.js";
 import { validationResult } from "express-validator";
 import ApiError from "../exceptions/apiError.js";
@@ -111,7 +112,7 @@ const refreshTokens = async (req, res, next) => {
 const getUsers = async (req, res, next) => {
   try {
     const users = await getAllUsers(req);
-    return res.json(users);
+    return res.status(200).json(users);
   } catch (error) {
     next(error);
   }
@@ -127,8 +128,7 @@ const sendFriendRequestController = async (req, res, next) => {
   
     const result = await sendFriendRequestService(myUserId, senderUserId)
     if (receiverSocketId) {
-			// io.to(<socket_id>).emit() used to send events to specific client
-			io.to(receiverSocketId).emit("newFriendRequest", result.newReq);
+			io.to(receiverSocketId).emit("newFriendRequest", result.result);
 		}
     return res.json(result);
   } catch (error) {
@@ -140,7 +140,11 @@ const sendFriendRequestController = async (req, res, next) => {
 const acceptFriendshipController = async (req, res, next) => {
   try {
     const {myUserId, senderUserId } = req.body
+    const receiverSocketId = getReceiverSocketId(senderUserId);
     const result = await acceptFriendshipService(myUserId, senderUserId)
+    if (receiverSocketId) {
+			io.to(receiverSocketId).emit("acceptFriendship", result.result);
+		}
     return res.json(result);
   } catch (error) {
     next(error);
@@ -149,7 +153,24 @@ const acceptFriendshipController = async (req, res, next) => {
 const cancelFriendshipController = async (req, res, next) => {
   try {
     const {myUserId, senderUserId } = req.body
+    const receiverSocketId = getReceiverSocketId(senderUserId);
     const result = await cancelFriendshipService(myUserId, senderUserId)
+    if (receiverSocketId) {
+			io.to(receiverSocketId).emit("cancelFriendship", result.result);
+		}
+    return res.json(result);
+  } catch (error) {
+    next(error);
+  }
+}
+
+
+const deleteNotificationController = async (req, res, next) => {
+  try {
+    const {myUserId, notificationId } = req.body
+
+    const result = await deleteNotificationService(myUserId, notificationId)
+
     return res.json(result);
   } catch (error) {
     next(error);
@@ -176,5 +197,6 @@ export {
   sendFriendRequestController,
   acceptFriendshipController,
   cancelFriendshipController,
+  deleteNotificationController,
   getUsersByIdController
 };

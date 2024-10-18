@@ -144,18 +144,6 @@ const refresh = async (refreshToken) => {
 };
 
 const getAllUsers = async (req) => {
-  // const users = await User.find()
-  //   .select(
-  //     "firstName lastName email birthDate isAdmin image friendRequests friends"
-  //   )
-  //   .lean();
-
-  // // Переименовываем _id в id для каждого пользователя
-  // const usersWithId = users.map((user) => {
-  //   return { ...user, id: user._id, _id: undefined };
-  // });
-
-  // return usersWithId;
   const loggedInUserId = new mongoose.Types.ObjectId(`${req.user.user.id}`);
   const users = await User.aggregate([
     {
@@ -169,7 +157,7 @@ const getAllUsers = async (req) => {
         birthDate: 1,
         isAdmin: 1,
         image: 1,
-        friendRequests: 1,
+        notifications: 1,
         friends: 1,
         id: "$_id", // создаем поле `id`, равное `_id`
         _id: 0, // исключаем поле `_id`
@@ -181,16 +169,17 @@ const getAllUsers = async (req) => {
 };
 
 const sendFriendRequestService = async (myUserId, senderUserId) => {
-  const targetUser = await User.findById(senderUserId);
-  if (!targetUser) {
-    throw ApiError.NotFound("User not Found !");
+  const myData = await User.findById(myUserId);
+  const senderData = await User.findById(senderUserId);
+  if (!myData || !senderData) {
+    throw ApiError.NotFound("User or Sender not Found !");
   }
 
   // Проверяем, не отправлен ли запрос ранее
-  const alreadyRequested = targetUser.friendRequests.some(
-    (request) => request.userId.toString() === myUserId
+  const alreadyRequested = senderData.notifications.some(
+    (request) => request.userId.toString() === myUserId && request.contact
   );
-  const alreadyFriend = targetUser.friends.some(
+  const alreadyFriend = senderData.friends.some(
     (request) => request.userId.toString() === myUserId
   );
   if (alreadyRequested) {
@@ -199,81 +188,98 @@ const sendFriendRequestService = async (myUserId, senderUserId) => {
   if (alreadyFriend) {
     throw ApiError.Conflict("Already friends!");
   }
-  // Добавляем запрос в массив friendRequests
-  targetUser.friendRequests.push({ userId: myUserId });
-  const newReq = targetUser.friendRequests.find((u) => `${u.userId}` === myUserId)
-  
+  // Добавляем запрос в массив notifications
+  senderData.notifications.unshift({
+    userId: myUserId,
+    image: myData.image,
+    label: `${myData.firstName} ${myData.lastName}`,
+    message: "Wants to be friends with you",
+    contact: true,
+  });
+ 
+  const result = senderData.notifications[0]
   // Сохраняем изменения
-  await targetUser.save();
+  await senderData.save();
 
-  
-  return { success: true, message: "Запрос в друзья отправлен", newReq};
+  return { success: true, message: "Запрос в друзья отправлен", result };
 };
 
 const acceptFriendshipService = async (myUserId, senderUserId) => {
   const myData = await User.findById(myUserId);
   const senderData = await User.findById(senderUserId);
-  if (!myData) {
-    throw ApiError.NotFound("User not Found !");
-  }
-  if (!senderData) {
-    throw ApiError.NotFound("Sender not Found !");
+  if (!myData || !senderData) {
+    throw ApiError.NotFound("User or Sender not Found !");
   }
 
-  const alreadyRequested = myData.friendRequests.some(
+  const alreadyRequested = myData.notifications.some(
     (request) => request.userId.toString() === senderUserId
   );
 
   if (!alreadyRequested) {
     throw ApiError.Conflict("Sender not found!");
   }
-  myData.friendRequests = myData.friendRequests.filter(
+  myData.notifications = myData.notifications.filter(
     (request) => request.userId.toString() !== senderUserId
   );
   myData.friends.push({ userId: senderUserId });
-  senderData.friends.push({ userId: myUserId });
+  senderData.notifications.unshift({
+    userId: myUserId,
+    image: myData.image,
+    label: `${myData.firstName} ${myData.lastName}`,
+    message: "Request accepted! We're now friends 😊",
+  })
+  const result = senderData.notifications[0]
+  senderData.friends.unshift({ userId: myUserId });
   await myData.save();
   await senderData.save();
   return {
     success: true,
     message: `${senderData.firstName} ${senderData.lastName} now your friend`,
+    result
   };
 };
 
 const cancelFriendshipService = async (myUserId, senderUserId) => {
   const myData = await User.findById(myUserId);
   const senderData = await User.findById(senderUserId);
-  if (!myData) {
+  if (!myData || !senderData) {
     throw ApiError.NotFound("User or Sender not Found !");
   }
-  if (!senderData) {
-    throw ApiError.NotFound("Sender not Found !");
-  }
-
-  const alreadyRequested = myData.friendRequests.some(
+  const alreadyRequested = myData.notifications.some(
     (request) => request.userId.toString() === senderUserId
   );
 
   const alreadyFriend = myData.friends.some(
     (request) => request.userId.toString() === senderUserId
   );
- 
 
   if (!alreadyRequested && !alreadyFriend) {
     throw ApiError.Conflict("Sender not found!");
   }
-  myData.friendRequests = myData.friendRequests.filter(
+  myData.notifications = myData.notifications.filter(
     (request) => request.userId.toString() !== senderUserId
   );
   myData.friends = myData.friends.filter(
     (request) => request.userId.toString() !== senderUserId
   );
-  senderData.friendRequests = myData.friendRequests.filter(
+
+  senderData.notifications = senderData.notifications.filter(
     (request) => request.userId.toString() !== myUserId
   );
-  senderData.friends = myData.friends.filter(
+
+  senderData.friends = senderData.friends.filter(
     (request) => request.userId.toString() !== myUserId
   );
+
+  senderData.notifications.unshift({
+    userId: myUserId,
+    image: myData.image,
+    label: `${myData.firstName} ${myData.lastName}`,
+    message: "cancelled friendship",
+  })
+
+  const result = senderData.notifications[0]
+
   await myData.save();
   await senderData.save();
   const canceledFriedship = `You have cancelled your friendship with ${senderData.firstName} ${senderData.lastName}`;
@@ -281,8 +287,26 @@ const cancelFriendshipService = async (myUserId, senderUserId) => {
   return {
     success: true,
     message: alreadyFriend ? removedFromFriends : canceledFriedship,
+    result
   };
 };
+
+
+const deleteNotificationService = async (myUserId, notificationId) => {
+  const myData = await User.findById(myUserId);
+
+  if (!myData) {
+    throw ApiError.NotFound("User or Sender not Found !");
+  }
+
+  myData.notifications = myData.notifications.filter((n) => n._id.toString() !== notificationId)
+  await myData.save()
+  return {
+    success: true,
+    message: "The notification has been removed.",
+  };
+
+}
 
 const getUsersByIdService = async (userIds) => {
   // Ищем пользователей, у которых _id находится в массиве userIds
@@ -309,5 +333,6 @@ export {
   sendFriendRequestService,
   acceptFriendshipService,
   cancelFriendshipService,
+  deleteNotificationService,
   getUsersByIdService,
 };

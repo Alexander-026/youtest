@@ -7,7 +7,7 @@ const userDto = (user) => {
     birthDate: user.birthDate,
     image: user.image,
     isAdmin: user.isAdmin,
-    friendRequests: user.friendRequests,
+    notifications: user.notifications,
     friends: user.friends
   };
 };

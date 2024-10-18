@@ -3,7 +3,6 @@ import { useAppDispatch, useAppSelector } from "../app/hooks"
 import {
   Badge,
   IconButton,
-  Menu,
   List,
   ListItem,
   ListItemAvatar,
@@ -12,68 +11,62 @@ import {
   Typography,
   Button,
   Stack,
+  Box,
 } from "@mui/material"
+import Drawer from "@mui/joy/Drawer"
 
 import { IoMdNotificationsOutline } from "react-icons/io"
 import {
   useAcceptFriendshipMutation,
   useCancelFriendshipMutation,
-  useGetUsersByIdMutation,
+  useDeleteNotificationMutation,
 } from "../app/api/usersApiSlice"
 import MyAvatar from "./MyAvatar"
 import { FcCancel } from "react-icons/fc"
 import { FaCheck } from "react-icons/fa6"
+import { CiSquareRemove } from "react-icons/ci"
 import {
   acceptFriendshipAction,
   cancelFriendshipAction,
-  userSlice,
+  addNewFriendRequestAction,
+  removeNotificationAction,
 } from "../features/user/userSlice"
 import dayjs from "dayjs"
 import { useSocketContext } from "../context/socketContext"
-import type { Friend } from "../types/user"
+import type { Notification } from "../types/user"
 
 const Notifications = () => {
   const { user } = useAppSelector(state => state.user)
   const { socket } = useSocketContext()
-  const {addNewFriendRequest} = userSlice.actions
+  // const { addNewFriendRequest, removeNotification } = userSlice.actions
   const dispatch = useAppDispatch()
-  const [getUsersById, { data, isError, isLoading }] = useGetUsersByIdMutation()
-  const [acceptFriendsh, { isError: acceptError, data: acceptData }] =
+  const [acceptFriendship, { isError: acceptError, data: acceptData }] =
     useAcceptFriendshipMutation()
   const [cancelFriendship, { isError: cancelError }] =
     useCancelFriendshipMutation()
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
-  const open = Boolean(anchorEl)
+  const [deleteNotification, { isError: deleteNotificationError }] =
+    useDeleteNotificationMutation()
+  const [open, setOpen] = useState<boolean>(false)
 
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget)
-  }
-  const handleClose = () => {
-    setAnchorEl(null)
-  }
+  const handlerNewRegs = useCallback(() => {
+    socket?.on("newFriendRequest", (result: Notification) => {
+      dispatch(addNewFriendRequestAction(result))
 
-
-
-  useEffect(() => {
-    if (user) {
-      const userIds = user.friendRequests.map(r => r.userId)
-
-      getUsersById({ userIds })
-
-      console.log("userIds", userIds)
-    }
-  }, [getUsersById, user])
-
-   // Обработка нового запроса в друзья через сокет
-   const handlerNewRegs = useCallback(() => {
-    socket?.on("newFriendRequest", (newReq: Friend) => {
-      console.log("newReq client", newReq)
-      dispatch(addNewFriendRequest(newReq))
+    })
+    socket?.on("acceptFriendship", (result: Notification) => {
+      dispatch(acceptFriendshipAction({ sender: result}))
+      dispatch(addNewFriendRequestAction(result))
+    })
+    socket?.on("cancelFriendship", (result: Notification) => {
+      dispatch(cancelFriendshipAction(result.userId))
+      dispatch(addNewFriendRequestAction(result))
     })
 
     // Очищаем обработчик при размонтировании компонента
     return () => {
       socket?.off("newFriendRequest")
+      socket?.off("acceptFriendship")
+      socket?.off("cancelFriendship")
     }
   }, [socket])
 
@@ -95,97 +88,132 @@ const Notifications = () => {
             aria-controls={open ? "basic-menu" : undefined}
             aria-haspopup="true"
             aria-expanded={open ? "true" : undefined}
-            disabled={!data?.length}
-            onClick={handleClick}
+            disabled={user ? !user.notifications.length : false}
+            onClick={() => setOpen(true)}
             size="small"
             color="inherit"
           >
             <Badge
-              badgeContent={data ? user.friendRequests.length : 0}
+              badgeContent={user ? user.notifications.length : 0}
               color="success"
             >
               <IoMdNotificationsOutline color="white" fontSize={25} />
             </Badge>
           </IconButton>
-          <Menu
-            id="basic-menu"
-            anchorEl={anchorEl}
+
+          <Drawer
+            color="neutral"
+            invertedColors
+            size="sm"
+            variant="soft"
+            component="aside"
+            anchor={"right"}
             open={open}
-            onClose={handleClose}
-            MenuListProps={{
-              "aria-labelledby": "basic-button",
-            }}
+            onClose={() => setOpen(false)}
           >
             <List>
-              {data?.map(otherUser => {
-                const sender = user.friendRequests.find(
-                  u => u.userId === otherUser.id,
-                )
+              {user.notifications.map(n => {
+                const fullName = n.label.split(" ")
 
                 return (
-                  <React.Fragment key={otherUser.id}>
+                  <Box
+                    sx={{
+                      position: "relative",
+                    }}
+                    key={n._id}
+                  >
                     <ListItem>
                       <ListItemAvatar>
-                        <MyAvatar user={otherUser} />
+                        <MyAvatar
+                          user={{
+                            image: n.image,
+                            firstName: fullName[0],
+                            lastName: fullName[1],
+                          }}
+                        />
                       </ListItemAvatar>
                       <ListItemText
-                        primary={`${otherUser.firstName} ${otherUser.lastName}`}
-                        secondary={
-                          <Typography>Wants to be friends with you</Typography>
-                        }
+                        primary={n.label}
+                        secondary={<Typography>{n.message}</Typography>}
                       />
                     </ListItem>
-                    {sender && (
-                      <Typography textAlign="center">{`${dayjs(sender.requestDate).format("DD.MM.YYYY HH:mm:ss")}`}</Typography>
-                    )}
+                    <Typography
+                      padding="0 1rem"
+                      textAlign="end"
+                    >{`${dayjs(n.requestDate).format("DD.MM.YYYY HH:mm:ss")}`}</Typography>
 
-                    <Stack
-                      justifyContent="center"
-                      gap={2}
-                      flexDirection={"row"}
-                      mb={1}
-                    >
-                      <Button
+                    {n.contact ? (
+                      <Stack
+                        justifyContent="center"
+                        gap={2}
+                        flexDirection={"row"}
+                        mb={1}
+                      >
+                        <Button
+                          onClick={() => {
+                            if (user.notifications.length === 1) {
+                              setOpen(false)
+                            }
+
+                            dispatch(acceptFriendshipAction({ sender: n }))
+                            acceptFriendship({
+                              myUserId: user.id,
+                              senderUserId: n.userId,
+                            })
+                          }}
+                          size="small"
+                          variant="contained"
+                          color="success"
+                        >
+                          <FaCheck />
+                        </Button>
+                        <Button
+                          onClick={() => {
+                            if (user.notifications.length === 1) {
+                              setOpen(false)
+                            }
+
+                            dispatch(cancelFriendshipAction(n.userId))
+                            cancelFriendship({
+                              myUserId: user.id,
+                              senderUserId: n.userId,
+                            })
+                          }}
+                          size="small"
+                          variant="outlined"
+                          color="error"
+                        >
+                          <FcCancel />
+                        </Button>
+                      </Stack>
+                    ) : (
+                      <IconButton
+                        size="small"
+                        sx={{
+                          position: "absolute",
+                          top: "0.2rem",
+                          right: "0.2rem",
+                        }}
                         onClick={() => {
-                          if (user.friendRequests.length === 1) {
-                            setAnchorEl(null)
+                          if (user.notifications.length === 1) {
+                            setOpen(false)
                           }
-                          sender && dispatch(acceptFriendshipAction({ sender }))
-                          acceptFriendsh({
+                          dispatch(removeNotificationAction(n._id))
+                          deleteNotification({
                             myUserId: user.id,
-                            senderUserId: otherUser.id,
+                            notificationId: n._id,
                           })
                         }}
-                        size="small"
-                        variant="contained"
-                        color="success"
                       >
-                        <FaCheck />
-                      </Button>
-                      <Button
-                        onClick={() => {
-                          if (user.friendRequests.length === 1) {
-                            setAnchorEl(null)
-                          }
-                          sender && dispatch(cancelFriendshipAction({ sender }))
-                          cancelFriendship({
-                            myUserId: user.id,
-                            senderUserId: otherUser.id,
-                          })
-                        }}
-                        size="small"
-                        variant="outlined"
-                        color="error"
-                      >
-                        <FcCancel />
-                      </Button>
-                    </Stack>
+                        <CiSquareRemove />
+                      </IconButton>
+                    )}
                     <Divider variant="fullWidth" component="div" />
-                  </React.Fragment>
+                  </Box>
                 )
               })}
             </List>
-          </Menu>
+          </Drawer>
         </>
       )}
     </>
