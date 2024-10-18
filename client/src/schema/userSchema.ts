@@ -19,11 +19,15 @@ const userSchema = {
     .required("Passwort wird benötigt")
     .min(3, "mindestens 3 Zeichen"),
   image: yup.string(),
-  friendRequests: yup.array().of(
+  notifications: yup.array().of(
     yup.object().shape({
-      userId: yup.string().required("userId is required"),
       _id: yup.string().required("_id is required"),
-      requestDate: yup.string().required("requestDate is required")
+      image:  yup.string().required("image is required"),
+      label:  yup.string().required("label is required"),
+      userId: yup.string().required("userId is required"),
+      message: yup.string().required("message is required"),
+      contact: yup.boolean().required("contact is required"),
+      requestDate: yup.string().required("requestDate is required"),
     })
   )
   .default([]),
