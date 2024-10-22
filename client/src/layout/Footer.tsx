@@ -14,7 +14,7 @@ const Footer = () => {
       }}
       component="footer"
     >
-      <Container maxWidth="xl">
+      <Container maxWidth={false}>
         <TextSlider/>
       </Container>
     </Box>

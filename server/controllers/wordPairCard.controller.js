@@ -7,7 +7,7 @@ import {
   detelePairs,
   evaluate,
   visit,
-} from "../service/wordPairCardService.js";
+} from "../service/wordPairCard.service.js";
 
 const createWordPairs = async (req, res, next) => {
   try {
@@ -62,7 +62,7 @@ const evaluateTest = async (req, res, next) => {
 const getAllWordPars = async (req, res, next) => {
   try {
     const wordCards = await getAll(req.params.id);
-    return res.json(wordCards);
+    return res.status(200).json(wordCards);
   } catch (error) {
     next(error);
   }

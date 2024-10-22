@@ -1,4 +1,4 @@
-import type { DecodedUser, Friend, Notification } from "../../types/user"
+import type { DecodedUser, Friend, Notification, OnlineUser } from "../../types/user"
 
 import type { IUserState } from "./userSlice"
 import type { CaseReducer, PayloadAction } from "@reduxjs/toolkit"
@@ -65,4 +65,10 @@ PayloadAction<string>
 > = (state, action) => {
   if (!state.user) return
   state.user.notifications = state.user.notifications.filter((n) => n._id !== action.payload)
+}
+
+
+
+export const setOnlineUsers:CaseReducer<IUserState, PayloadAction<OnlineUser[]>> = (state, action) => {
+  state.onlineUsers = action.payload
 }

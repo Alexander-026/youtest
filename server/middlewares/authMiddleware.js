@@ -1,5 +1,5 @@
 import ApiError from "../exceptions/apiError.js";
-import { validateAccessToken } from "../service/tokenService.js";
+import { validateAccessToken } from "../service/token.service.js";
 
 const authMiddleWare = (req, res, next) => {
   try {
@@ -22,7 +22,7 @@ const authMiddleWare = (req, res, next) => {
       console.log("three")
       return next(ApiError.UnauthorizedError());
     }
-    req.user = userData;
+    req.user = userData.user;
     next();
   } catch (error) {
     console.log("four")

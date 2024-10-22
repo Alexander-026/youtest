@@ -1,4 +1,6 @@
 import type { ReactNode } from "react"
+import type { Socket } from "socket.io-client"
+import type { OnlineUser } from "../types/user"
 import {
   createContext,
   useState,
@@ -6,9 +8,11 @@ import {
   useContext,
   useCallback,
 } from "react"
-import type { Socket } from "socket.io-client"
+
 import { io } from "socket.io-client"
-import { useAppSelector } from "../app/hooks"
+import { useAppDispatch, useAppSelector } from "../app/hooks"
+import { setOnlineUsersAction } from "../features/user/userSlice"
+
 
 // Определение типов для контекста сокета
 interface ISocketContext {
@@ -39,6 +43,8 @@ export const SocketContextProvider: React.FC<SocketContextProviderProps> = ({
 }) => {
   const [socket, setSocket] = useState<Socket | null>(null)
   const { user } = useAppSelector(state => state.user)
+  const dispatch = useAppDispatch()
+  
 
   // Функция для подключения пользователя
   const connectionUser = useCallback(() => {
@@ -51,8 +57,9 @@ export const SocketContextProvider: React.FC<SocketContextProviderProps> = ({
 
       setSocket(newSocket)
 
-      newSocket.on("getOnlineUsers", users => {
-        console.log("Online Users", users)
+      newSocket.on("getOnlineUsers", (users: OnlineUser[]) => {
+        console.log("online users", users)
+        dispatch(setOnlineUsersAction(users))
       })
 
       // Возвращаем функцию для корректного закрытия соединения при размонтировании

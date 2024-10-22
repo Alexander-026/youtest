@@ -1,5 +1,6 @@
-import User from "../models/userModel.js";
+import User from "../models/user.model.js";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 import {
   findToken,
   generateTokens,
@@ -7,7 +8,7 @@ import {
   removeTokenById,
   saveToken,
   validateRefreshToken,
-} from "../service/tokenService.js";
+} from "./token.service.js";
 import userDto from "../dtos/userDto.js";
 import ApiError from "../exceptions/apiError.js";
 import mongoose from "mongoose";
@@ -39,6 +40,7 @@ const registration = async (
     image,
   });
   const newUser = userDto(user);
+  newUser.wasOnline = user.wasOnline
   const tokens = generateTokens({ ...newUser });
   await saveToken(newUser.id, tokens.refreshToken);
 
@@ -58,6 +60,7 @@ const login = async (email, password) => {
   }
 
   const newUser = userDto(user);
+  newUser.wasOnline = user.wasOnline
   const tokens = generateTokens({ ...newUser });
   await saveToken(newUser.id, tokens.refreshToken);
   await removeToken();
@@ -77,13 +80,13 @@ const update = async (user) => {
   } = user;
   const userFromData = await User.findById(id);
   if (!userFromData) {
-    throw ApiError.BadRequest(`Benutzer wurde nicht gefunden`);
+    throw ApiError.BadRequest(`User not found`);
   }
   if (email !== userFromData.email) {
     const userExists = await User.findOne({ email });
     if (userExists) {
       throw ApiError.BadRequest(
-        `Benutzer mit E-Mail-Adresse ${email} existiert bereits`
+        `User with email address ${email} already exists`
       );
     }
   }
@@ -96,7 +99,7 @@ const update = async (user) => {
       userFromData.password
     );
     if (!isPasswordValid) {
-      throw ApiError.BadRequest(`Das alte Passwort ist falsch`);
+      throw ApiError.BadRequest(`The old password is incorrect`);
     }
     const salt = await bcrypt.genSalt(10);
     hashedPassword = await bcrypt.hash(newPassword, salt);
@@ -118,6 +121,16 @@ const update = async (user) => {
 };
 
 const logout = async (refreshToken) => {
+  const decodedUser =  await jwt.decode(refreshToken)
+  if(!decodedUser) {
+    throw ApiError.BadRequest(`User not found`);
+  }
+
+  const user = await User.findById(decodedUser.user.id)
+
+  user.wasOnline = Date.now()
+  await user.save()
+
   const token = await removeToken(refreshToken);
   return token;
 };
@@ -144,7 +157,7 @@ const refresh = async (refreshToken) => {
 };
 
 const getAllUsers = async (req) => {
-  const loggedInUserId = new mongoose.Types.ObjectId(`${req.user.user.id}`);
+  const loggedInUserId = new mongoose.Types.ObjectId(`${req.user.id}`);
   const users = await User.aggregate([
     {
       $match: { _id: { $ne: loggedInUserId } }, // исключаем текущего пользователя

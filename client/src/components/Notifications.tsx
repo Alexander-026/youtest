@@ -84,10 +84,6 @@ const Notifications = () => {
       {user && (
         <>
           <IconButton
-            id="basic-button"
-            aria-controls={open ? "basic-menu" : undefined}
-            aria-haspopup="true"
-            aria-expanded={open ? "true" : undefined}
             disabled={user ? !user.notifications.length : false}
             onClick={() => setOpen(true)}
             size="small"

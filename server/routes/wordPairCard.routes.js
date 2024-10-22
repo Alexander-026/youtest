@@ -7,7 +7,7 @@ import {
   deleteWordPairs,
   evaluateTest,
   updateWordPairs,
-} from "../controllers/wordPairCardController.js";
+} from "../controllers/wordPairCard.controller.js";
 
 const router = express.Router();
 

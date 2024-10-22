@@ -1,12 +1,12 @@
 import jwt from "jsonwebtoken";
-import Token from "../models/tokenModel.js";
+import Token from "../models/token.model.js";
 
 const generateTokens = (user) => {
   const accessToken = jwt.sign({ user }, process.env.JWT_ACCESS_SECRET, {
     expiresIn: "24h",
   });
   const refreshToken = jwt.sign({ user }, process.env.JWT_REFRESH_SECRET, {
-    expiresIn: "14d",
+    expiresIn: "7d",
   });
 
   return {

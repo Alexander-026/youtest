@@ -35,7 +35,8 @@ export type LoginUser = {
   password: string
 }
 
-export type RegisterUser = Omit<DecodedUser, "id" | "isAdmin" | "image"> & {
+
+export type RegisterUser = Omit<DecodedUser, "id" | "isAdmin" | "image" | "notifications" | "friends"> & {
   password: string
   image?: string
 }
@@ -58,3 +59,8 @@ export type ContactMe = {
   text: string
 }
 export type DecodedUser = User["user"]
+
+export type OnlineUser = Pick<DecodedUser, "id" | "firstName" | "lastName" | "image">
+
+
+

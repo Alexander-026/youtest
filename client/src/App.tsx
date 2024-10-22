@@ -17,6 +17,7 @@ import SettingsPair from "./pages/SettingsPairPage/SettingsPair"
 import PracticWordsPage from "./pages/PracticWordsPage/PracticWordsPage"
 import Home from "./pages/Home"
 import FriendsPage from "./pages/private/FriendsPage"
+import Messages from "./pages/private/Messages"
 const App = () => {
   const root = createBrowserRouter(
     createRoutesFromElements(
@@ -28,9 +29,8 @@ const App = () => {
           <Route path="" element={<PrivateRouter />}>
             <Route path="/profile" element={<Profile />} />
             <Route path="/settings" element={<Settings />} />
-           
             <Route path="/users" element={<Users />} />
-            <Route path="/messages" element={<>Messages</>} />
+            <Route path="/messages" element={<Messages/>} />
             <Route path="/notifications" element={<>Notifications</>} />
             <Route path="/friends" element={<FriendsPage/>} />
           </Route>

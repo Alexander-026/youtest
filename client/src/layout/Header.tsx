@@ -17,11 +17,9 @@ import { useAppSelector } from "../app/hooks"
 import type { Pages } from "../types/pages"
 import DriwerItem from "../components/DriwerItem"
 import { BiMessageSquareDetail } from "react-icons/bi"
-import { GiThreeFriends } from "react-icons/gi";
+import { GiThreeFriends } from "react-icons/gi"
 import Notifications from "../components/Notifications"
 import AccountMenu from "../components/AccountMenu"
-
-
 
 const pages: Pages[] = [
   {
@@ -48,7 +46,6 @@ const Header = () => {
   const [open, setOpen] = useState<boolean>(false)
   const { user } = useAppSelector(state => state.user)
 
-
   return (
     <AppBar position="sticky">
       <Drawer
@@ -73,41 +70,39 @@ const Header = () => {
             ))}
         </List>
       </Drawer>
-      <Toolbar>
-        {user && (
-          <IconButton
-            size="large"
-            edge="start"
-            color="inherit"
-            aria-label="menu"
-            sx={{ mr: 2 }}
-            onClick={() => setOpen(true)}
-          >
-            <GiHamburgerMenu />
-          </IconButton>
-        )}
-
+      <Toolbar sx={{height: "4xrem"}}>
         <Stack
           flexGrow={1}
           direction={"row"}
           alignItems="center"
           justifyContent="space-between"
         >
-          <Link to="/">
-            <Typography variant="h5" component="h6" >
-              YouTest
-            </Typography>
-          </Link>
+          <Stack direction={"row"} alignItems="center" gap={2}>
+            {user && (
+              <IconButton
+                size="large"
+                color="inherit"
+                onClick={() => setOpen(true)}
+              >
+                <GiHamburgerMenu />
+              </IconButton>
+            )}
+            <Link to="/">
+              <Typography variant="h5" component="h6">
+                YouTest
+              </Typography>
+            </Link>
+          </Stack>
 
           {user ? (
             <Stack direction={"row"} alignItems="center" gap={1}>
               <Link to="/messages">
-                <IconButton size="small" >
-                  <BiMessageSquareDetail color="white"  fontSize={25} />
+                <IconButton size="small">
+                  <BiMessageSquareDetail color="white" fontSize={25} />
                 </IconButton>
               </Link>
-              <Notifications/>
-               <AccountMenu />
+              <Notifications />
+              <AccountMenu />
             </Stack>
           ) : (
             <AuthMenu />

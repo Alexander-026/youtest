@@ -1,13 +1,16 @@
-import { Container, Box } from "@mui/material"
+import { Container } from "@mui/material"
 import { Outlet } from "react-router-dom"
 
 const Main = () => {
   return (
-    <Box component="main" flexGrow={1} bgcolor="white">
-      <Container sx={{py: "1rem"}} maxWidth="xl">
-        <Outlet />
-      </Container>
-    </Box>
+    <Container
+      component="main"
+      sx={{ py: "1rem",  bgcolor: "#FFFFFF", height: "calc(100vh - 6rem)"}}
+      maxWidth={false}
+     
+    >
+      <Outlet />
+    </Container>
   )
 }
 

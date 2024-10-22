@@ -11,7 +11,7 @@ import {
   cancelFriendshipController,
   getUsersByIdController,
   deleteNotificationController,
-} from "../controllers/userController.js";
+} from "../controllers/user.controller.js";
 import { body } from "express-validator";
 import {
   authMiddleWare,

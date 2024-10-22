@@ -1,5 +1,5 @@
 import wordPairsDto from "../dtos/wordPairsDto.js";
-import { WordPairCard } from "../models/WordPairCard.js";
+import { WordPairCard } from "../models/wordPairCard.model.js";
 
 const create = async (idUser, title, pairsWord) => {
   const result = await WordPairCard.create({

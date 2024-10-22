@@ -1,18 +1,42 @@
-import React from "react"
-import { Button, ListItemIcon, Menu, MenuItem, Tooltip } from "@mui/material"
+import { useState } from "react"
+import {
+  Button,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Tooltip,
+} from "@mui/material"
+import Drawer from "@mui/joy/Drawer"
 import { FaUser } from "react-icons/fa"
 import { IoSettingsSharp } from "react-icons/io5"
 import { RiLogoutBoxFill } from "react-icons/ri"
 
-import { Link, useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import { useAppDispatch, useAppSelector } from "../app/hooks"
 import MyAvatar from "./MyAvatar"
 import { useLogoutMutation } from "../app/api/usersApiSlice"
 import { userSlice } from "../features/user/userSlice"
 import useLocalStorage from "../hooks/useLocalStorage"
 import { apiSlice } from "../app/api/apiSlice"
+import type { Pages } from "../types/pages"
+import DriwerItem from "./DriwerItem"
 
-
+const pages: Pages[] = [
+  {
+    path: "/profile",
+    icon: <FaUser size={20} />,
+    label: "Users",
+    isAdmin: false,
+  },
+  {
+    path: "/settings",
+    icon: <IoSettingsSharp size={20} />,
+    label: "Friends",
+    isAdmin: false,
+  },
+]
 
 const AccountMenu = () => {
   const { user } = useAppSelector(state => state.user)
@@ -22,23 +46,15 @@ const AccountMenu = () => {
   const dispatch = useAppDispatch()
   const { logOut } = userSlice.actions
   const [logoutApiCall] = useLogoutMutation()
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
-  const open = Boolean(anchorEl)
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget)
-  }
-  const handleClose = () => {
-    setAnchorEl(null)
-  }
-
+  const [open, setOpen] = useState<boolean>(false)
   const logoutHandler = async () => {
     try {
+      await logoutApiCall()
       dispatch(logOut())
-      dispatch(apiSlice.util.resetApiState());
+      dispatch(apiSlice.util.resetApiState())
       removeToken()
       removeRefreshToken()
       navigate("/", { replace: true })
-      await logoutApiCall()
     } catch (err) {
       console.error(err)
     }
@@ -51,53 +67,45 @@ const AccountMenu = () => {
           <Tooltip title="Login&Register">
             <Button
               id="basic-button"
-              aria-controls={open ? "basic-menu" : undefined}
-              aria-haspopup="true"
-              aria-expanded={open ? "true" : undefined}
-              onClick={handleClick}
+              onClick={() => setOpen(true)}
               color="inherit"
+              sx={{padding: 0}}
+              
             >
               <MyAvatar user={user} />
             </Button>
           </Tooltip>
-
-          <Menu
-            id="basic-menu"
-            anchorEl={anchorEl}
+          <Drawer
+            color="neutral"
+            invertedColors
+            size="sm"
+            variant="soft"
+            component="aside"
+            anchor={"right"}
             open={open}
-            onClose={handleClose}
-            MenuListProps={{
-              "aria-labelledby": "basic-button",
-            }}
+            onClose={() => setOpen(false)}
           >
-            <Link to="/profile">
-              <MenuItem onClick={handleClose}>
-                <ListItemIcon>
-                  <FaUser size={20} />
-                </ListItemIcon>
-                Profile
-              </MenuItem>
-            </Link>
-            <Link to="/settings">
-              <MenuItem onClick={handleClose}>
-                <ListItemIcon>
-                  <IoSettingsSharp size={20} />
-                </ListItemIcon>
-                Settings
-              </MenuItem>
-            </Link>
-            <MenuItem
-              onClick={() => {
-                handleClose()
-                logoutHandler()
-              }}
+            <List
+              onClick={() => setOpen(false)}
+              onKeyDown={() => setOpen(false)}
             >
-              <ListItemIcon>
-                <RiLogoutBoxFill size={20} />
-              </ListItemIcon>
-              Logout
-            </MenuItem>
-          </Menu>
+              {pages.map(p => (
+                <DriwerItem key={p.path} page={p} />
+              ))}
+              <ListItem disablePadding>
+                <ListItemButton
+                  onClick={() => {
+                    logoutHandler()
+                  }}
+                >
+                  <ListItemIcon>
+                    <RiLogoutBoxFill size={20} />
+                  </ListItemIcon>
+                  <ListItemText primary={"Logout"} />
+                </ListItemButton>
+              </ListItem>
+            </List>
+          </Drawer>
         </>
       )}
     </>

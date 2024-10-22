@@ -10,7 +10,7 @@ import {
   cancelFriendshipService,
   getUsersByIdService,
   deleteNotificationService,
-} from "../service/userService.js";
+} from "../service/user.service.js";
 import { validationResult } from "express-validator";
 import ApiError from "../exceptions/apiError.js";
 import { getReceiverSocketId, io } from "../socket/socket.js";
@@ -90,7 +90,7 @@ const logoutCurrentUser = async (req, res, next) => {
     const { refreshToken } = req.cookies;
     const token = await logout(refreshToken);
     res.clearCookie("refreshToken");
-    return res.json(token);
+    return res.status(200).json(token);
   } catch (error) {
     next(error);
   }
@@ -130,7 +130,7 @@ const sendFriendRequestController = async (req, res, next) => {
     if (receiverSocketId) {
 			io.to(receiverSocketId).emit("newFriendRequest", result.result);
 		}
-    return res.json(result);
+    return res.status(200).json(result);
   } catch (error) {
     next(error);
   }
@@ -145,7 +145,7 @@ const acceptFriendshipController = async (req, res, next) => {
     if (receiverSocketId) {
 			io.to(receiverSocketId).emit("acceptFriendship", result.result);
 		}
-    return res.json(result);
+    return res.status(200).json(result);
   } catch (error) {
     next(error);
   }
@@ -158,7 +158,7 @@ const cancelFriendshipController = async (req, res, next) => {
     if (receiverSocketId) {
 			io.to(receiverSocketId).emit("cancelFriendship", result.result);
 		}
-    return res.json(result);
+    return res.status(204).json(result);
   } catch (error) {
     next(error);
   }
@@ -171,7 +171,7 @@ const deleteNotificationController = async (req, res, next) => {
 
     const result = await deleteNotificationService(myUserId, notificationId)
 
-    return res.json(result);
+    return res.status(204).json(result);
   } catch (error) {
     next(error);
   }
@@ -181,7 +181,7 @@ const getUsersByIdController = async (req, res, next) => {
   try {
     const {userIds } = req.body
     const result = await getUsersByIdService(userIds)
-    return res.json(result);
+    return res.status(200).json(result);
   } catch (error) {
     next(error);
   }

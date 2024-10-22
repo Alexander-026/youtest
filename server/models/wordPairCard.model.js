@@ -1,6 +1,6 @@
 import { Schema, model, ObjectId } from "mongoose";
 
-export const wordPairCard = new Schema({
+export const wordPairCardSchema = new Schema({
   idUser: { type: ObjectId, ref: "User" },
   title: { type: String, require: true },
   visited: { type: Boolean, default: false },
@@ -19,4 +19,4 @@ export const wordPairCard = new Schema({
   ],
 });
 
-export const WordPairCard = model("WordPairCard", wordPairCard);
+export const WordPairCard = model("WordPairCard", wordPairCardSchema);

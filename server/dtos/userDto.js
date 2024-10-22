@@ -8,7 +8,7 @@ const userDto = (user) => {
     image: user.image,
     isAdmin: user.isAdmin,
     notifications: user.notifications,
-    friends: user.friends
+    friends: user.friends,
   };
 };
 

@@ -29,6 +29,7 @@ const userSchema = mongoose.Schema(
       default: false,
     },
     image: { type: String, default: "" },
+    wasOnline: {type: Date, default: Date.now},
     notifications: {
       type: [
         {
