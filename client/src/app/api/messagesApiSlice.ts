@@ -7,13 +7,11 @@ export const messageApiSlice = apiSlice.injectEndpoints({
       Message,
       { receiverId: string; message: string }
     >({
-      query: ({ receiverId, message }) => {
-        return {
-          url: `${import.meta.env.VITE_MESSAGES_URL}/send/${receiverId}`,
-          method: "POST",
-          body: { message },
-        }
-      },
+      query: ({ receiverId, message }) => ({
+        url: `${import.meta.env.VITE_MESSAGES_URL}/send/${receiverId}`,
+        method: "POST",
+        body: { message },
+      }),
     }),
     getConvarsations: builder.query<Omit<Conversation, "messages">[], void>({
       query: () => ({
