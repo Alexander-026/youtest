@@ -7,7 +7,7 @@ import {
   Stack,
 } from "@mui/material"
 import Drawer from "@mui/joy/Drawer"
-import { useState } from "react"
+import { memo, useState } from "react"
 import { GiHamburgerMenu } from "react-icons/gi"
 import { FaUsers } from "react-icons/fa"
 import { BsTranslate } from "react-icons/bs"
@@ -16,10 +16,10 @@ import AuthMenu from "../components/AuthMenu"
 import { useAppSelector } from "../app/hooks"
 import type { Pages } from "../types/pages"
 import DriwerItem from "../components/DriwerItem"
-import { BiMessageSquareDetail } from "react-icons/bi"
 import { GiThreeFriends } from "react-icons/gi"
 import Notifications from "../components/Notifications"
 import AccountMenu from "../components/AccountMenu"
+import MessageNotifications from "../components/MessageNotifications"
 
 const pages: Pages[] = [
   {
@@ -96,11 +96,7 @@ const Header = () => {
 
           {user ? (
             <Stack direction={"row"} alignItems="center" gap={1}>
-              <Link to="/messages">
-                <IconButton size="small">
-                  <BiMessageSquareDetail color="white" fontSize={25} />
-                </IconButton>
-              </Link>
+              <MessageNotifications/>
               <Notifications />
               <AccountMenu />
             </Stack>

@@ -30,6 +30,7 @@ import {
   cancelFriendshipAction,
   addNewFriendRequestAction,
   removeNotificationAction,
+  userSlice,
 } from "../features/user/userSlice"
 import dayjs from "dayjs"
 import { useSocketContext } from "../context/socketContext"
@@ -38,7 +39,7 @@ import type { Notification } from "../types/user"
 const Notifications = () => {
   const { user } = useAppSelector(state => state.user)
   const { socket } = useSocketContext()
-  // const { addNewFriendRequest, removeNotification } = userSlice.actions
+  const { addNewFriendRequest, removeNotification } = userSlice.actions
   const dispatch = useAppDispatch()
   const [acceptFriendship, { isError: acceptError, data: acceptData }] =
     useAcceptFriendshipMutation()

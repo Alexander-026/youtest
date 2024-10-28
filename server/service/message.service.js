@@ -24,6 +24,7 @@ const sendMessageService = async (receiverId, senderId, message) => {
     senderId,
     receiverId,
     message,
+    conversationId: conversation._id,
   });
 
   if (newMessage) {
@@ -36,6 +37,7 @@ const sendMessageService = async (receiverId, senderId, message) => {
     id: newMessage._id,
     senderId: newMessage.senderId,
     receiverId: newMessage.receiverId,
+    conversationId: newMessage.conversationId,
     message: newMessage.message,
     isRead: newMessage.isRead,
     createdAt: newMessage.createdAt,
@@ -92,7 +94,7 @@ const getAllConversationsService = async (senderId) => {
                   firstName: "$$participant.firstName",
                   lastName: "$$participant.lastName",
                   image: "$$participant.image",
-                  wasOnline: "$$participant.wasOnline"
+                  wasOnline: "$$participant.wasOnline",
                 },
               },
             },
@@ -105,6 +107,7 @@ const getAllConversationsService = async (senderId) => {
 
   return conversations;
 };
+
 
 const getConversationService = async (conversationId, senderId) => {
   const conversation = await Conversation.aggregate([
@@ -142,6 +145,7 @@ const getConversationService = async (conversationId, senderId) => {
               receiverId: "$$message.receiverId",
               message: "$$message.message",
               isRead: "$$message.isRead",
+              conversationId: "$$message.conversationId",
               createdAt: "$$message.createdAt",
               updatedAt: "$$message.updatedAt",
             },
@@ -191,8 +195,89 @@ const getConversationService = async (conversationId, senderId) => {
   return conversation[0]; // Вернем первый элемент из массива
 };
 
+const readMessageService = async (readerId, unreadMessagesId) => {
+  if (!readerId || !unreadMessagesId || !Array.isArray(unreadMessagesId)) {
+    throw ApiError.BadRequest(
+      "Missing or invalid required fields: readerId,  or unreadMessagesId"
+    );
+  }
+
+  // Проверяем, чтобы все элементы в unreadMessagesId были валидными ObjectId
+  const validIds = unreadMessagesId.filter((id) =>
+    mongoose.Types.ObjectId.isValid(id)
+  );
+
+  if (validIds.length === 0) {
+    throw ApiError.BadRequest("No valid message IDs provided");
+  }
+
+  // Проверяем сообщения, которые принадлежат получателю (receiverId === readerId)
+  const messagesToRead = await Message.find({
+    _id: { $in: validIds },
+    receiverId: readerId, // Условие: сообщения должны быть отправлены пользователю с ID readerId
+    isRead: false, // Только сообщения, которые ещё не прочитаны
+  });
+
+  if (!messagesToRead || messagesToRead.length === 0) {
+    throw ApiError.BadRequest("No messages available to read for this user");
+  }
+
+  // Обновляем только сообщения, которые соответствуют условию (receiverId === readerId)
+  await Message.updateMany(
+    { _id: { $in: messagesToRead.map((msg) => msg._id) } }, // Обновляем только найденные сообщения
+    { $set: { isRead: true } } // Устанавливаем isRead в true
+  );
+
+  // Возвращаем только указанные поля для обновлённых сообщений
+  const updatedMessages = await Message.find({
+    _id: { $in: messagesToRead.map((msg) => msg._id) },
+  })
+    .select("_id senderId receiverId message isRead createdAt updatedAt") // Указываем нужные поля
+    .lean(); // Используем lean для возврата простых объектов, а не Mongoose документов
+
+  // Переименовываем поле _id в id
+  const formattedMessages = updatedMessages.map((msg) => ({
+    id: msg._id, // Переименовываем _id в id
+    senderId: msg.senderId,
+    receiverId: msg.receiverId,
+    message: msg.message,
+    conversationId: msg.conversationId,
+    isRead: msg.isRead,
+    createdAt: msg.createdAt,
+    updatedAt: msg.updatedAt,
+  }));
+
+  return formattedMessages; // Возвращаем отформатированный массив сообщений
+};
+
+const getUnreadMessagesService = async (myUserId) => {
+  const result = await Message.find({
+    receiverId: myUserId,
+    isRead: false,
+  }).select("conversationId");
+
+  // Используем reduce для подсчета количества непрочитанных сообщений по conversationId
+  const conversationCounts = result.reduce((acc, message) => {
+    const convId = message.conversationId.toString(); // Преобразуем ObjectId в строку для единообразия
+    acc[convId] = (acc[convId] || 0) + 1;
+    return acc;
+  }, {});
+
+  // Преобразуем объект в массив объектов { conversationId, count }
+  const unreadMessages = Object.entries(conversationCounts).map(
+    ([conversationId, count]) => ({
+      conversationId,
+      count,
+    })
+  );
+
+  return unreadMessages;
+};
+
 export {
   sendMessageService,
   getAllConversationsService,
   getConversationService,
+  readMessageService,
+  getUnreadMessagesService,
 };

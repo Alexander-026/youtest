@@ -27,13 +27,13 @@ const pages: Pages[] = [
   {
     path: "/profile",
     icon: <FaUser size={20} />,
-    label: "Users",
+    label: "Profile",
     isAdmin: false,
   },
   {
     path: "/settings",
     icon: <IoSettingsSharp size={20} />,
-    label: "Friends",
+    label: "Settings",
     isAdmin: false,
   },
 ]

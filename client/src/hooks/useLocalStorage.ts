@@ -4,6 +4,7 @@ type SetValue = (value: string | ((prevValue: string) => string)) => void
 type RemoveValue = () => void
 
 function useLocalStorage(key: string): [string, SetValue, RemoveValue] {
+
   // Attempt to get the value from local storage during component initialization
   const storedValue = localStorage.getItem(key)
   // const initial = storedValue ? storedValue : ""

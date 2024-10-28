@@ -1,4 +1,4 @@
-import type { DecodedUser, Friend, Notification, OnlineUser } from "../../types/user"
+import type { DecodedUser, Notification, OnlineUser } from "../../types/user"
 
 import type { IUserState } from "./userSlice"
 import type { CaseReducer, PayloadAction } from "@reduxjs/toolkit"
@@ -38,8 +38,6 @@ export const cancelFriendship: CaseReducer<
   IUserState,
   PayloadAction<string>
 > = (state, action) => {
- 
-
   if (!state.user) return
 
   state.user.notifications = state.user.notifications.filter(
@@ -58,17 +56,19 @@ export const addNewFriendRequest: CaseReducer<
   state.user.notifications.push(action.payload)
 }
 
-
-export const removeNotification:CaseReducer<
-IUserState,
-PayloadAction<string>
+export const removeNotification: CaseReducer<
+  IUserState,
+  PayloadAction<string>
 > = (state, action) => {
   if (!state.user) return
-  state.user.notifications = state.user.notifications.filter((n) => n._id !== action.payload)
+  state.user.notifications = state.user.notifications.filter(
+    n => n._id !== action.payload,
+  )
 }
 
-
-
-export const setOnlineUsers:CaseReducer<IUserState, PayloadAction<OnlineUser[]>> = (state, action) => {
+export const setOnlineUsers: CaseReducer<
+  IUserState,
+  PayloadAction<OnlineUser[]>
+> = (state, action) => {
   state.onlineUsers = action.payload
 }

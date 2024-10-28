@@ -7,6 +7,7 @@ import {
   useEffect,
   useContext,
   useCallback,
+  useRef,
 } from "react"
 
 import { io } from "socket.io-client"
@@ -43,7 +44,18 @@ export const SocketContextProvider: React.FC<SocketContextProviderProps> = ({
 }) => {
   const [socket, setSocket] = useState<Socket | null>(null)
   const { user } = useAppSelector(state => state.user)
+  const previousOnlineUsersRef = useRef<OnlineUser[]>([]);
   const dispatch = useAppDispatch()
+
+  // Функция для сравнения двух списков пользователей
+  const hasUsersChanged = (newUsers: OnlineUser[], prevUsers: OnlineUser[]) => {
+    if (newUsers.length !== prevUsers.length) return true;
+
+    const newUserIds = newUsers.map((user) => user.id).sort();
+    const prevUserIds = prevUsers.map((user) => user.id).sort();
+
+    return newUserIds.some((id, index) => id !== prevUserIds[index]);
+  };
   
 
   // Функция для подключения пользователя
@@ -54,12 +66,18 @@ export const SocketContextProvider: React.FC<SocketContextProviderProps> = ({
           userId: user.id,
         },
       })
+   
 
       setSocket(newSocket)
 
       newSocket.on("getOnlineUsers", (users: OnlineUser[]) => {
-        console.log("online users", users)
-        dispatch(setOnlineUsersAction(users))
+        const prevUsers = previousOnlineUsersRef.current;
+
+        // Проверяем, изменился ли список пользователей
+        if (hasUsersChanged(users, prevUsers)) {
+          dispatch(setOnlineUsersAction(users));
+          previousOnlineUsersRef.current = users; // Обновляем реф
+        }
       })
 
       // Возвращаем функцию для корректного закрытия соединения при размонтировании

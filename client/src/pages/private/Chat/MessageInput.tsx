@@ -3,36 +3,33 @@ import type React from "react"
 import { useCallback, useState } from "react"
 import { IoSend } from "react-icons/io5"
 import { useSendMessageMutation } from "../../../app/api/messagesApiSlice"
-import type { Message } from "../../../types/messages"
+import { useAppDispatch } from "../../../app/hooks"
+import { setMessageAction } from "../../../features/chat/chatSlice"
 
 type MessageInputProps = {
   receiverId: string
-  setAllMessages: (message: Message) => void
 }
 
-const MessageInput: React.FC<MessageInputProps> = ({
-  receiverId,
-  setAllMessages,
-}) => {
+const MessageInput: React.FC<MessageInputProps> = ({ receiverId }) => {
   const [send, { isError, isLoading }] = useSendMessageMutation()
+  const dispatch = useAppDispatch()
   const [message, setMessage] = useState("")
 
   const handlerSendMessage = useCallback(
     async (newMessage: string) => {
+      setMessage("")
       const data = await send({
         receiverId,
         message: newMessage,
       }).unwrap()
-
-      console.log(
-        " setMessages(message) setMessages(message) setMessages(message)",
-        message,
-      )
-      setAllMessages(data)
-      setMessage("")
+      dispatch(setMessageAction(data))
     },
-    [receiverId, send, setAllMessages],
+    [dispatch, receiverId, send],
   )
+
+  const isValid = (mes: string): boolean => {
+    return mes.trim().length > 0
+  }
 
   return (
     <Box
@@ -54,13 +51,14 @@ const MessageInput: React.FC<MessageInputProps> = ({
         disabled={isLoading}
       />
       <IconButton
-        disabled={!message || isLoading}
+        disabled={!isValid(message) || isLoading}
+        sx={{ color: "#FFFFFF" }}
         onClick={() => handlerSendMessage(message)}
       >
         {isLoading ? (
-          <CircularProgress size={20}  sx={{color:"#3949a"}} />
+          <CircularProgress size={20} sx={{ color: "#3949a" }} />
         ) : (
-          <IoSend color={message ? "#FFFFFF" : "#2626262"} />
+          <IoSend />
         )}
       </IconButton>
     </Box>

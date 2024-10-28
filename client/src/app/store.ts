@@ -4,6 +4,7 @@ import { setupListeners } from "@reduxjs/toolkit/query"
 import { apiSlice } from "./api/apiSlice"
 import { userSlice } from "../features/user/userSlice"
 import { generatorWordsSlice } from "../features/generatorWord/generatorWordSlice"
+import { chatSlice } from "../features/chat/chatSlice"
 
 // `combineSlices` automatically combines the reducers using
 // their `reducerPath`s, therefore we no longer need to call `combineReducers`.
@@ -13,6 +14,7 @@ const rootReducer = combineSlices(
   },
   userSlice,
   generatorWordsSlice,
+  chatSlice
 )
 // Infer the `RootState` type from the root reducer
 export type RootState = ReturnType<typeof rootReducer>

@@ -8,7 +8,7 @@ import Layout from "./layout/Layout"
 import Login from "./pages/auth/Login"
 import Register from "./pages/auth/Register"
 import AdminRouter from "./components/AdminRouter"
-import Users from "./pages/private/Users"
+import Users from "./pages/private/Users/Users"
 import PrivateRouter from "./components/PrivateRouter"
 import Settings from "./pages/User/Settings"
 import Profile from "./pages/User/Profile"
@@ -17,7 +17,7 @@ import SettingsPair from "./pages/SettingsPairPage/SettingsPair"
 import PracticWordsPage from "./pages/PracticWordsPage/PracticWordsPage"
 import Home from "./pages/Home"
 import FriendsPage from "./pages/private/FriendsPage"
-import Messages from "./pages/private/Messages"
+import Messages from "./pages/private/Chat"
 const App = () => {
   const root = createBrowserRouter(
     createRoutesFromElements(

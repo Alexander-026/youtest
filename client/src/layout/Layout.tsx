@@ -47,7 +47,7 @@ const Layout = () => {
 
   return (
     <Stack
-      sx={{ minHeight: "100vh", bgcolor: "darkslategrey" }}
+      sx={{ minHeight: "100vh" }}
       direction="column"
     >
       <Header />

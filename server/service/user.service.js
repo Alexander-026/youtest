@@ -12,6 +12,7 @@ import {
 import userDto from "../dtos/userDto.js";
 import ApiError from "../exceptions/apiError.js";
 import mongoose from "mongoose";
+import Message from "../models/message.model.js";
 
 const registration = async (
   firstName,
@@ -148,6 +149,8 @@ const refresh = async (refreshToken) => {
   }
 
   const user = await User.findById(userData.user.id);
+  user.wasOnline = Date.now()
+  await user.save()
 
   const newUser = userDto(user);
   const tokens = generateTokens({ ...newUser });
@@ -336,6 +339,9 @@ const getUsersByIdService = async (userIds) => {
   return usersWithId;
 };
 
+
+
+
 export {
   registration,
   login,
@@ -347,5 +353,5 @@ export {
   acceptFriendshipService,
   cancelFriendshipService,
   deleteNotificationService,
-  getUsersByIdService,
+  getUsersByIdService
 };
