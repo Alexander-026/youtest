@@ -4,11 +4,14 @@ import {
   Button,
   CircularProgress,
   IconButton,
+  Modal,
   Paper,
   TextField,
+  Tooltip,
   Typography,
   styled,
 } from "@mui/material"
+import Zoom from "@mui/material/Zoom"
 import Grid from "@mui/material/Unstable_Grid2"
 import { useState } from "react"
 import { useAppDispatch, useAppSelector } from "../../app/hooks"
@@ -21,14 +24,19 @@ import dayjs from "dayjs"
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs"
 import { DateField, LocalizationProvider } from "@mui/x-date-pickers"
 import { MdVisibility, MdVisibilityOff } from "react-icons/md"
+import { IoIosWarning } from "react-icons/io"
+import { IoShieldCheckmarkSharp } from "react-icons/io5"
+import { MdPendingActions } from "react-icons/md"
 import { userSlice } from "../../features/user/userSlice"
 import {
   useRemoveUserImageMutation,
+  useSetConfirmMailerMutation,
   useUpdateUserMutation,
   useUploadUserImageMutation,
 } from "../../app/api/usersApiSlice"
 import useLocalStorage from "../../hooks/useLocalStorage"
 import Upload from "../../components/Upload"
+import modalStyle from "../../utils/modalSyle"
 
 const Form = styled("form")({
   display: "flex",
@@ -37,19 +45,28 @@ const Form = styled("form")({
   gap: "2rem",
 })
 
-
 const Profile = () => {
-  const [visibilityOld, setVisibilityOld] = useState<boolean>(false)
-  const [visibilityOldRepeat, setVisibilityOldRepeat] = useState<boolean>(false)
-  const [visibilityNew, setVisibilityNew] = useState<boolean>(false)
+  const [visibility, setVisibility] = useState<boolean>(false)
   const [formData, setFormData] = useState<FormData | null>(null)
+  const [open, setOpen] = useState<boolean>(false)
+
   const [upload] = useUploadUserImageMutation()
+  const [
+    setConfirmMailer,
+    {
+      error: errorConfirm,
+      isError: isErrorConfirm,
+      isLoading: isLoadigConfirm,
+      data: dataConfirm,
+    },
+  ] = useSetConfirmMailerMutation()
   const [update, { isLoading: updateLoading, error: updateError }] =
     useUpdateUserMutation()
   const [removeImg, { isLoading: removeLoading, error: removeError }] =
     useRemoveUserImageMutation()
   const { user } = useAppSelector(state => state.user)
   const [, setToken] = useLocalStorage("accessToken")
+  const [, setRefreshToken] = useLocalStorage("refreshToken")
   const dispath = useAppDispatch()
   const { onUser } = userSlice.actions
   const {
@@ -74,6 +91,14 @@ const Profile = () => {
     },
   })
 
+  const handleOpen = () => setOpen(true)
+  const handleClose = () => setOpen(false)
+
+  const handleSend = () => {
+    setConfirmMailer()
+    handleClose()
+  }
+
   // Form submit event handler
   const onSubmit: SubmitHandler<UpdateUserForm> = async e => {
     const { repeatOldPassword, oldPassword, newPassword, ...updatedData } = e
@@ -82,13 +107,13 @@ const Profile = () => {
         // await removeImg({ filePath: `./public/${user.image}` })
         await removeImg({ filePath: `public/${user.image}` })
       }
-      console.log("formData", formData)
       const res = formData ? await upload(formData).unwrap() : ""
       console.log("res.image", res.image)
 
-      updatedData.image = formData ? res.image.split("/public")[1].replace("/","") : user!.image
+      updatedData.image = formData
+        ? res.image.split("/public")[1].replace("/", "")
+        : user!.image
 
-      console.log("updatedData", updatedData)
       const updatedUser = await update({
         ...updatedData,
         oldPassword: oldPassword || "",
@@ -97,6 +122,7 @@ const Profile = () => {
       }).unwrap()
       dispath(onUser(updatedUser.user))
       setToken(updatedUser.accessToken)
+      setRefreshToken(updatedUser.refreshToken)
       reset({
         firstName: updatedUser.user.firstName,
         lastName: updatedUser.user.lastName,
@@ -117,11 +143,34 @@ const Profile = () => {
       }
     }
   }
-
   const isLoading = updateLoading || removeLoading
   const error = updateError || removeError
   return (
     <Box position="relative" flexGrow={1}>
+      <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="confirm-email-title"
+        aria-describedby="confirm-email-description"
+      >
+        <Box sx={modalStyle}>
+          <Typography id="confirm-email-title" variant="h6" component="h2">
+            Send Confirmation Email
+          </Typography>
+          <Typography id="confirm-email-description" sx={{ mt: 2 }}>
+            To complete your registration, we need to verify your email address.
+            Would you like us to send a confirmation link to your email?
+          </Typography>
+          <Box sx={{ mt: 3, display: "flex", justifyContent: "space-between" }}>
+            <Button variant="contained" color="primary" onClick={handleSend}>
+              Send
+            </Button>
+            <Button variant="outlined" color="secondary" onClick={handleClose}>
+              Cancel
+            </Button>
+          </Box>
+        </Box>
+      </Modal>
       <Paper
         sx={{ width: { md: "50rem", sm: "30rem" }, mx: "auto", p: "1rem" }}
       >
@@ -130,6 +179,7 @@ const Profile = () => {
           sx={{
             width: "100%",
           }}
+          autoComplete="off"
         >
           <Typography variant="h5" align="center">
             Profile
@@ -157,6 +207,7 @@ const Profile = () => {
                     fullWidth
                     error={!!errors.firstName}
                     helperText={errors.firstName?.message}
+                    autoComplete="off"
                   />
                 )}
               />
@@ -173,6 +224,7 @@ const Profile = () => {
                     fullWidth
                     error={!!errors.lastName}
                     helperText={errors.lastName?.message}
+                    autoComplete="off"
                   />
                 )}
               />
@@ -218,6 +270,55 @@ const Profile = () => {
                     error={!!errors.email}
                     helperText={errors.email?.message}
                     fullWidth
+                    autoComplete="off"
+                    InputProps={{
+                      endAdornment: (
+                        <Tooltip
+                          TransitionComponent={Zoom}
+                          title={
+                            user?.emailStatus === "confirmed"
+                              ? "Email confirmed"
+                              : user?.emailStatus === "pending"
+                                ? "Email confirmation is pending"
+                                : "Email not confirmed"
+                          }
+                        >
+                          <IconButton
+                            size="small"
+                            color={
+                              user?.emailStatus === "confirmed"
+                                ? "success"
+                                : (user?.emailStatus === "pending" || dataConfirm)
+                                  ? "info"
+                                  : "error"
+                            }
+                            onClick={() =>
+                              (user?.emailStatus === "unconfirmed" ||
+                                user?.emailStatus === "pending") &&
+                              handleOpen()
+                            }
+                          >
+                            {isLoadigConfirm ? (
+                              <CircularProgress
+                                size={22}
+                                color="primary"
+                                variant="indeterminate"
+                              />
+                            ) : (
+                              <>
+                                {user?.emailStatus === "confirmed" ? (
+                                  <IoShieldCheckmarkSharp />
+                                ) : (user?.emailStatus === "pending" || dataConfirm) ? (
+                                  <MdPendingActions />
+                                ) : (
+                                  <IoIosWarning />
+                                )}
+                              </>
+                            )}
+                          </IconButton>
+                        </Tooltip>
+                      ),
+                    }}
                   />
                 )}
               />
@@ -234,21 +335,8 @@ const Profile = () => {
                     fullWidth
                     error={!!errors.oldPassword}
                     helperText={errors.oldPassword?.message}
-                    type={visibilityOld ? "text" : "password"}
-                    InputProps={{
-                      endAdornment: (
-                        <IconButton
-                          size="small"
-                          onClick={() => setVisibilityOld(pre => !pre)}
-                        >
-                          {visibilityOld ? (
-                            <MdVisibilityOff />
-                          ) : (
-                            <MdVisibility />
-                          )}
-                        </IconButton>
-                      ),
-                    }}
+                    type={visibility ? "text" : "password"}
+                    autoComplete="off"
                   />
                 )}
               />
@@ -265,21 +353,8 @@ const Profile = () => {
                     size="small"
                     error={!!errors.repeatOldPassword}
                     helperText={errors.repeatOldPassword?.message}
-                    type={visibilityOldRepeat ? "text" : "password"}
-                    InputProps={{
-                      endAdornment: (
-                        <IconButton
-                          size="small"
-                          onClick={() => setVisibilityOldRepeat(pre => !pre)}
-                        >
-                          {visibilityOldRepeat ? (
-                            <MdVisibilityOff />
-                          ) : (
-                            <MdVisibility />
-                          )}
-                        </IconButton>
-                      ),
-                    }}
+                    type={visibility ? "text" : "password"}
+                    autoComplete="off"
                   />
                 )}
               />
@@ -296,26 +371,20 @@ const Profile = () => {
                     fullWidth
                     error={!!errors.newPassword}
                     helperText={errors.newPassword?.message}
-                    type={visibilityNew ? "text" : "password"}
-                    InputProps={{
-                      endAdornment: (
-                        <IconButton
-                          size="small"
-                          onClick={() => setVisibilityNew(pre => !pre)}
-                        >
-                          {visibilityNew ? (
-                            <MdVisibilityOff />
-                          ) : (
-                            <MdVisibility />
-                          )}
-                        </IconButton>
-                      ),
-                    }}
+                    type={visibility ? "text" : "password"}
+                    autoComplete="off"
                   />
                 )}
               />
             </Grid>
             <Grid xs={6} textAlign="right">
+              <IconButton
+                sx={{ mr: "1rem" }}
+                size="small"
+                onClick={() => setVisibility(pre => !pre)}
+              >
+                {visibility ? <MdVisibilityOff /> : <MdVisibility />}
+              </IconButton>
               <Button
                 disabled={!isValid || !isDirty}
                 variant="outlined"

@@ -7,6 +7,7 @@ import {
   ListItem,
   ListItemAvatar,
   ListItemText,
+  Stack,
   Typography,
 } from "@mui/material"
 import MyAvatar from "../../../components/MyAvatar"
@@ -128,67 +129,78 @@ const Messages: React.FC<MessagesProps> = ({ allMessages, data }) => {
       }}
     >
       <List sx={{ width: "100%" }}>
-        {allMessages.map((m, index) => (
-          <ListItem
-            key={m.id}
-            sx={{
-              justifyContent: "flex-start",
-            }}
-            ref={index === allMessages.length - 1 ? lastMessageRef : null}
-          >
-            <ListItemAvatar>
-              <MyAvatar
-                user={
-                  m.senderId === user!.id
-                    ? {
-                        firstName: user!.firstName,
-                        lastName: user!.lastName,
-                        image: user!.image,
-                      }
-                    : {
-                        firstName: data.participant.firstName,
-                        lastName: data.participant.lastName,
-                        image: data.participant.image,
-                      }
+        {allMessages.map((m, index) => {
+          const isLastInSequence =
+            index === allMessages.length - 1 ||
+            allMessages[index + 1].senderId !== m.senderId
+
+          return (
+            <ListItem
+              key={m.id}
+              sx={{
+                justifyContent:"flex-start",
+                alignItems: "flex-end",
+              }}
+              ref={index === allMessages.length - 1 ? lastMessageRef : null}
+            >
+              {isLastInSequence && (
+                <ListItemAvatar>
+                  <MyAvatar
+                    user={
+                      m.senderId === user!.id
+                        ? {
+                            firstName: user!.firstName,
+                            lastName: user!.lastName,
+                            image: user!.image,
+                          }
+                        : {
+                            firstName: data.participant.firstName,
+                            lastName: data.participant.lastName,
+                            image: data.participant.image,
+                          }
+                    }
+                  />
+                </ListItemAvatar>
+              )}
+              <ListItemText
+                sx={{
+                  color: "#FFFFFF",
+                  flex: "inherit",
+                  WebkitFlex: "inherit",
+                  minWidth: "10rem",
+                  maxWidth: "20rem",
+                  bgcolor: m.senderId === user!.id ? "#193c47" : "#424242",
+                  padding: "0.5rem",
+                  borderRadius: "10px",
+                  marginLeft: isLastInSequence ? 0 : "56px", // Adjust alignment
+                }}
+                primary={
+                  <Typography
+                    sx={{
+                      overflowWrap: "break-word",
+                      whiteSpace: "normal",
+                    }}
+                  >
+                    {m.message}
+                  </Typography>
+                }
+                secondary={
+                  <Typography textAlign="right">
+                    {`${dayjs(m.createdAt).format("HH:mm")}`}{" "}
+                    {m.senderId === user!.id &&
+                      (m.isRead ? (
+                        <IoCheckmarkDoneSharp color="green" />
+                      ) : (
+                        <IoCheckmarkDoneSharp color="white" />
+                      ))}
+                  </Typography>
                 }
               />
-            </ListItemAvatar>
-            <ListItemText
-              sx={{
-                color: "#FFFFFF",
-                flex: "inherit",
-                WebkitFlex: "inherit",
-                minWidth: "10rem",
-                maxWidth: "20rem",
-                bgcolor: m.senderId === user!.id ? "#193c47" : "#424242",
-                padding: "0.5rem",
-                borderRadius: "10px",
-              }}
-              primary={
-                <Typography
-                  sx={{
-                    overflowWrap: "break-word",
-                    whiteSpace: "normal",
-                  }}
-                >
-                  {m.message}
-                </Typography>
-              }
-              secondary={
-                <Typography textAlign="right">
-                  {`${dayjs(m.createdAt).format("HH:mm")}`}{" "}
-                  {m.senderId === user!.id &&
-                    (m.isRead ? (
-                      <IoCheckmarkDoneSharp color="green" />
-                    ) : (
-                      <IoCheckmarkDoneSharp color="white" />
-                    ))}
-                </Typography>
-              }
-            />
-          </ListItem>
-        ))}
+            </ListItem>
+          )
+        })}
       </List>
+
       {showScrollDownButton && lastMessageRef.current && (
         <IconButton
           sx={{

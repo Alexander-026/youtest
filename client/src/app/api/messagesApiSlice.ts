@@ -33,7 +33,6 @@ export const messageApiSlice = apiSlice.injectEndpoints({
       query: ({ conversationId }) => ({
         url: `${import.meta.env.VITE_MESSAGES_URL}/conversation/${conversationId}`,
       }),
-     
     }),
     getUnreadMessages: builder.query<UnreadMessage[], void>({
       query: () => ({

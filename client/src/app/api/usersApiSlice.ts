@@ -1,6 +1,8 @@
+
 import type {
   ContactMe,
   DecodedUser,
+  EmailStatus,
   LoginUser,
   RegisterUser,
   UpdateUser,
@@ -29,6 +31,17 @@ export const userApiSlice = apiSlice.injectEndpoints({
         url: `${import.meta.env.VITE_USERS_URL}/update`,
         method: "PUT",
         body: data,
+      }),
+    }),
+    setConfirmMailer: builder.mutation<{message: string}, void>({
+      query: () => ({
+        url: `${import.meta.env.VITE_USERS_URL}/setConfirmMailer`,
+        method: "POST",
+      }),
+    }),
+    confirmEmail: builder.query<{emailStatus: EmailStatus}, { userId: string }>({
+      query: ({ userId }) => ({
+        url: `${import.meta.env.VITE_USERS_URL}/confirmEmail/${userId}`,
       }),
     }),
     uploadUserImage: builder.mutation({
@@ -131,6 +144,7 @@ export const {
   useAcceptFriendshipMutation,
   useCancelFriendshipMutation,
   useDeleteNotificationMutation,
-  useGetUsersByIdMutation
-
+  useGetUsersByIdMutation,
+  useSetConfirmMailerMutation,
+  useLazyConfirmEmailQuery
 } = userApiSlice

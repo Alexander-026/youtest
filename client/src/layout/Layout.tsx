@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Stack } from "@mui/material"
+import { Box } from "@mui/material"
 import Header from "./Header"
 import Main from "./Main"
 import Footer from "./Footer"
@@ -42,18 +42,14 @@ const Layout = () => {
     refreshHandler()
   }, [])
 
-  
-
-
   return (
-    <Stack
+    <Box
       sx={{ minHeight: "100vh" }}
-      direction="column"
     >
       <Header />
       <Main />
-      <Footer />
-    </Stack>
+      {/* <Footer /> */}
+    </Box>
   )
 }
 

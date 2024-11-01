@@ -9,17 +9,9 @@ import {
 } from "../../../app/api/usersApiSlice"
 import { useAppDispatch, useAppSelector } from "../../../app/hooks"
 import { acceptFriendshipAction, cancelFriendshipAction } from "../../../features/user/userSlice"
+import modalStyle from "../../../utils/modalSyle"
 
-const style = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 400,
-  bgcolor: "background.paper",
-  boxShadow: 24,
-  p: 4,
-}
+
 
 type UsersModalType = {
   handleClose: () => void
@@ -91,7 +83,7 @@ const dispatch = useAppDispatch()
       open={!!showModal}
       aria-labelledby="modal-modal-title"
     >
-      <Box sx={style}>
+      <Box sx={modalStyle}>
         <Typography
           id="modal-modal-title"
           variant="h6"

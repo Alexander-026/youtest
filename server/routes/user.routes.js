@@ -11,6 +11,8 @@ import {
   cancelFriendshipController,
   getUsersByIdController,
   deleteNotificationController,
+  setConfirmMailerController,
+  confirmEmailController,
 } from "../controllers/user.controller.js";
 import { body } from "express-validator";
 import {
@@ -32,6 +34,8 @@ router
   );
 router.post("/login", loginUser);
 router.post("/logout", logoutCurrentUser);
+router.post("/setConfirmMailer", authMiddleWare, setConfirmMailerController);
+router.get("/confirmEmail/:id", confirmEmailController);
 router.put("/update", authMiddleWare, updateUser);
 router.post("/refresh", refreshTokens);
 router.get("/", authMiddleWare,  getUsers);

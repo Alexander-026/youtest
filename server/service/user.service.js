@@ -1,3 +1,5 @@
+import dotenv from "dotenv";
+dotenv.config();
 import User from "../models/user.model.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
@@ -12,7 +14,7 @@ import {
 import userDto from "../dtos/userDto.js";
 import ApiError from "../exceptions/apiError.js";
 import mongoose from "mongoose";
-import Message from "../models/message.model.js";
+import { transporter } from "../controllers/contact.controller.js";
 
 const registration = async (
   firstName,
@@ -41,7 +43,7 @@ const registration = async (
     image,
   });
   const newUser = userDto(user);
-  newUser.wasOnline = user.wasOnline
+  newUser.wasOnline = user.wasOnline;
   const tokens = generateTokens({ ...newUser });
   await saveToken(newUser.id, tokens.refreshToken);
 
@@ -61,7 +63,7 @@ const login = async (email, password) => {
   }
 
   const newUser = userDto(user);
-  newUser.wasOnline = user.wasOnline
+  newUser.wasOnline = user.wasOnline;
   const tokens = generateTokens({ ...newUser });
   await saveToken(newUser.id, tokens.refreshToken);
   await removeToken();
@@ -90,6 +92,7 @@ const update = async (user) => {
         `User with email address ${email} already exists`
       );
     }
+    userFromData.emailStatus = "unconfirmed"
   }
 
   let hashedPassword = null;
@@ -122,15 +125,15 @@ const update = async (user) => {
 };
 
 const logout = async (refreshToken) => {
-  const decodedUser =  await jwt.decode(refreshToken)
-  if(!decodedUser) {
+  const decodedUser = await jwt.decode(refreshToken);
+  if (!decodedUser) {
     throw ApiError.BadRequest(`User not found`);
   }
 
-  const user = await User.findById(decodedUser.user.id)
+  const user = await User.findById(decodedUser.user.id);
 
-  user.wasOnline = Date.now()
-  await user.save()
+  user.wasOnline = Date.now();
+  await user.save();
 
   const token = await removeToken(refreshToken);
   return token;
@@ -141,6 +144,8 @@ const refresh = async (refreshToken) => {
     throw ApiError.UnauthorizedError();
   }
 
+  console.log("refreshed")
+
   const userData = validateRefreshToken(refreshToken);
   const tokenFromDB = await findToken(refreshToken);
 
@@ -149,8 +154,8 @@ const refresh = async (refreshToken) => {
   }
 
   const user = await User.findById(userData.user.id);
-  user.wasOnline = Date.now()
-  await user.save()
+  user.wasOnline = Date.now();
+  await user.save();
 
   const newUser = userDto(user);
   const tokens = generateTokens({ ...newUser });
@@ -212,8 +217,8 @@ const sendFriendRequestService = async (myUserId, senderUserId) => {
     message: "Wants to be friends with you",
     contact: true,
   });
- 
-  const result = senderData.notifications[0]
+
+  const result = senderData.notifications[0];
   // Сохраняем изменения
   await senderData.save();
 
@@ -243,15 +248,15 @@ const acceptFriendshipService = async (myUserId, senderUserId) => {
     image: myData.image,
     label: `${myData.firstName} ${myData.lastName}`,
     message: "Request accepted! We're now friends 😊",
-  })
-  const result = senderData.notifications[0]
+  });
+  const result = senderData.notifications[0];
   senderData.friends.unshift({ userId: myUserId });
   await myData.save();
   await senderData.save();
   return {
     success: true,
     message: `${senderData.firstName} ${senderData.lastName} now your friend`,
-    result
+    result,
   };
 };
 
@@ -292,9 +297,9 @@ const cancelFriendshipService = async (myUserId, senderUserId) => {
     image: myData.image,
     label: `${myData.firstName} ${myData.lastName}`,
     message: "cancelled friendship",
-  })
+  });
 
-  const result = senderData.notifications[0]
+  const result = senderData.notifications[0];
 
   await myData.save();
   await senderData.save();
@@ -303,10 +308,9 @@ const cancelFriendshipService = async (myUserId, senderUserId) => {
   return {
     success: true,
     message: alreadyFriend ? removedFromFriends : canceledFriedship,
-    result
+    result,
   };
 };
-
 
 const deleteNotificationService = async (myUserId, notificationId) => {
   const myData = await User.findById(myUserId);
@@ -315,14 +319,15 @@ const deleteNotificationService = async (myUserId, notificationId) => {
     throw ApiError.NotFound("User or Sender not Found !");
   }
 
-  myData.notifications = myData.notifications.filter((n) => n._id.toString() !== notificationId)
-  await myData.save()
+  myData.notifications = myData.notifications.filter(
+    (n) => n._id.toString() !== notificationId
+  );
+  await myData.save();
   return {
     success: true,
     message: "The notification has been removed.",
   };
-
-}
+};
 
 const getUsersByIdService = async (userIds) => {
   // Ищем пользователей, у которых _id находится в массиве userIds
@@ -339,8 +344,62 @@ const getUsersByIdService = async (userIds) => {
   return usersWithId;
 };
 
+const setConfirmMailerService = async (id, myEmail) => {
+  const user = await User.findById(id);
+  if (!user) {
+    throw ApiError.BadRequest(`Activator not found`);
+  }
+  const link = `${process.env.CLIENT_ORIGIN}/activated/${id}`;
 
+  user.emailStatus = "pending";
+  const mailOptions = {
+    from: process.env.SMTP_USER,
+    to:myEmail,
+    subject: "Confirm Your Email Address",
+    text: "",
+    html: `
+        <div>
+           <h1>Confirm Your Email</h1>
+            <a href="${link}">Confirm</a>
+        </div>
+      `,
+  };
+  return new Promise((resolve, reject) => {
+    transporter.sendMail(mailOptions, async (error, info) => {
+      if (error) {
+        console.error("Error sending email:", error);
+        reject(ApiError.BadRequest("Error sending message"));
+      } else {
+        try {
+          await user.save(); // Сохраняем обновленный статус пользователя
+          console.log("Email sent: " + info.response);
+          resolve({ message: "Confirmation email sent successfully." });
+        } catch (saveError) {
+          console.error("Error saving user:", saveError);
+          reject(ApiError.BadRequest("Error saving user data"));
+        }
+      }
+    });
+  });
+};
 
+const confirmEmailService = async (activateId) => {
+  const user = await User.findById(activateId);
+  if (!user) {
+    throw ApiError.BadRequest(`Activator not found`);
+  }
+
+  if(user.emailStatus === "confirmed") {
+    throw ApiError.BadRequest(`already confirmed`);
+  }
+
+  user.emailStatus = "confirmed";
+  const savedUser = await user.save();
+  const activatedUser = userDto(savedUser);
+  const emailStatus = activatedUser.emailStatus
+
+  return {emailStatus};
+};
 
 export {
   registration,
@@ -353,5 +412,7 @@ export {
   acceptFriendshipService,
   cancelFriendshipService,
   deleteNotificationService,
-  getUsersByIdService
+  getUsersByIdService,
+  setConfirmMailerService,
+  confirmEmailService,
 };

@@ -9,10 +9,13 @@ export type User = {
     isAdmin: boolean
     notifications: Notification[]
     friends: Friend[]
+    emailStatus: EmailStatus
   }
   refreshToken: string
   accessToken: string
 }
+
+export type EmailStatus = "unconfirmed" | "pending" | "confirmed"
 
 export type Notification = {
   _id: string
@@ -36,7 +39,7 @@ export type LoginUser = {
 }
 
 
-export type RegisterUser = Omit<DecodedUser, "id" | "isAdmin" | "image" | "notifications" | "friends"> & {
+export type RegisterUser = Omit<DecodedUser, "id" | "isAdmin" | "image" | "notifications" | "friends" | "emailStatus"> & {
   password: string
   image?: string
 }

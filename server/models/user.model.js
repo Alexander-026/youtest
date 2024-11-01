@@ -28,16 +28,22 @@ const userSchema = mongoose.Schema(
       required: true,
       default: false,
     },
+    emailStatus: {
+      type: String,
+      enum: ["unconfirmed", "pending", "confirmed"], 
+      required: true,
+      default: "unconfirmed", 
+    },
     image: { type: String, default: "" },
-    wasOnline: {type: Date, default: Date.now},
+    wasOnline: { type: Date, default: Date.now },
     notifications: {
       type: [
         {
           userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
           image: { type: String, default: "" },
-          label: {type: String, require: true},
-          message: {type: String, require: true},
-          contact: {type: Boolean, default: false},
+          label: { type: String, require: true },
+          message: { type: String, require: true },
+          contact: { type: Boolean, default: false },
           requestDate: { type: Date, default: Date.now },
         },
       ],

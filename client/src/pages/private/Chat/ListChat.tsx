@@ -76,13 +76,16 @@ const ListChat = () => {
             )
             const unreadCount = unreadMessages.find(
               um =>
-                um.conversationId === conversation.id && conversation.id !== selectedConversationId,
+                um.conversationId === conversation.id &&
+                conversation.id !== selectedConversationId,
             )?.count
             return (
               <ListItem
                 sx={{
                   backgroundColor:
-                    selectedConversationId === conversation.id ? "#193c47" : "transparent",
+                    selectedConversationId === conversation.id
+                      ? "#193c47"
+                      : "transparent",
                   position: "relative",
                 }}
                 disablePadding
@@ -94,7 +97,9 @@ const ListChat = () => {
                   color="success"
                 />
                 <ListItemButton
-                  onClick={() => dispatch(selectConversationAction(conversation.id))}
+                  onClick={() =>
+                    dispatch(selectConversationAction(conversation.id))
+                  }
                   sx={{
                     flexDirection: { md: "row", xs: "column" },
                     px: { md: "0.5rem", xs: 0 },
@@ -116,8 +121,9 @@ const ListChat = () => {
                     primary={
                       <Typography
                         sx={{
-                          pr: "1rem",
-                          display: { md: "block", xs: "none" },
+                          pr: { md: "1rem", xs: 0 },
+                          fontSize: { md: "12px", xs: "8px" },
+                          textAlign: { md: "left", xs: "center" },
                         }}
                       >
                         {participant.firstName} {participant.lastName}
@@ -127,8 +133,8 @@ const ListChat = () => {
                       <Typography
                         sx={{
                           pr: { md: "1rem", xs: 0 },
-                          // display: { md: "block", xs: "none" },
                           fontSize: { md: "12px", xs: "8px" },
+                          textAlign: { md: "left", xs: "center" },
                         }}
                         color={isOnline ? "green" : ""}
                       >

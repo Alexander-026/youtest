@@ -5,6 +5,7 @@ import {
   Typography,
   List,
   Stack,
+  CssBaseline,
 } from "@mui/material"
 import Drawer from "@mui/joy/Drawer"
 import { memo, useState } from "react"
@@ -47,65 +48,69 @@ const Header = () => {
   const { user } = useAppSelector(state => state.user)
 
   return (
-    <AppBar position="sticky">
-      <Drawer
-        color="neutral"
-        invertedColors
-        size="sm"
-        variant="soft"
-        component="aside"
-        anchor={"left"}
-        open={!!user && open}
-        onClose={() => setOpen(false)}
-      >
-        <List onClick={() => setOpen(false)} onKeyDown={() => setOpen(false)}>
-          {user?.isAdmin &&
-            pages
-              .filter(page => page.isAdmin === user?.isAdmin)
-              .map(p => <DriwerItem key={p.path} page={p} />)}
-          {pages
-            .filter(page => !page.isAdmin)
-            .map(p => (
-              <DriwerItem key={p.path} page={p} />
-            ))}
-        </List>
-      </Drawer>
-      <Toolbar sx={{height: "4xrem"}}>
-        <Stack
-          flexGrow={1}
-          direction={"row"}
-          alignItems="center"
-          justifyContent="space-between"
+    <>
+      <CssBaseline />
+      <AppBar position="fixed">
+        <Drawer
+          color="neutral"
+          invertedColors
+          size="sm"
+          variant="soft"
+          component="aside"
+          anchor={"left"}
+          open={!!user && open}
+          onClose={() => setOpen(false)}
         >
-          <Stack direction={"row"} alignItems="center" gap={2}>
-            {user && (
-              <IconButton
-                size="large"
-                color="inherit"
-                onClick={() => setOpen(true)}
-              >
-                <GiHamburgerMenu />
-              </IconButton>
-            )}
-            <Link to="/">
-              <Typography variant="h5" component="h6">
-                YouTest
-              </Typography>
-            </Link>
-          </Stack>
-
-          {user ? (
-            <Stack direction={"row"} alignItems="center" gap={1}>
-              <MessageNotifications/>
-              <Notifications />
-              <AccountMenu />
+          <List onClick={() => setOpen(false)} onKeyDown={() => setOpen(false)}>
+            {user?.isAdmin &&
+              pages
+                .filter(page => page.isAdmin === user?.isAdmin)
+                .map(p => <DriwerItem key={p.path} page={p} />)}
+            {pages
+              .filter(page => !page.isAdmin)
+              .map(p => (
+                <DriwerItem key={p.path} page={p} />
+              ))}
+          </List>
+        </Drawer>
+        <Toolbar>
+          <Stack
+            flexGrow={1}
+            direction={"row"}
+            alignItems="center"
+            justifyContent="space-between"
+          >
+            <Stack direction={"row"} alignItems="center" gap={2}>
+              {user && (
+                <IconButton
+                  size="large"
+                  color="inherit"
+                  onClick={() => setOpen(true)}
+                >
+                  <GiHamburgerMenu />
+                </IconButton>
+              )}
+              <Link to="/">
+                <Typography variant="h5" component="h6">
+                  YouTest
+                </Typography>
+              </Link>
             </Stack>
-          ) : (
-            <AuthMenu />
-          )}
-        </Stack>
-      </Toolbar>
-    </AppBar>
+
+            {user ? (
+              <Stack direction={"row"} alignItems="center" gap={1}>
+                <MessageNotifications />
+                <Notifications />
+                <AccountMenu />
+              </Stack>
+            ) : (
+              <AuthMenu />
+            )}
+          </Stack>
+        </Toolbar>
+      </AppBar>
+      <Toolbar />
+    </>
   )
 }
 

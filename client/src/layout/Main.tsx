@@ -6,10 +6,9 @@ const Main = () => {
     <Container
       component="main"
       sx={{
-        // py: "1rem",
         bgcolor: "#FFFFFF",
-        height: "calc(100vh - 6rem)",
-        padding: { md: "1rem", xs: 0 },
+        height: "100%",
+        py: '1rem'
       }}
       maxWidth={false}
     >

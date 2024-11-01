@@ -18,36 +18,39 @@ import PracticWordsPage from "./pages/PracticWordsPage/PracticWordsPage"
 import Home from "./pages/Home"
 import FriendsPage from "./pages/private/FriendsPage"
 import Messages from "./pages/private/Chat"
+import Activated from "./pages/Activated"
+import ActivatedRouter from "./components/ActivatedRouter"
 const App = () => {
   const root = createBrowserRouter(
     createRoutesFromElements(
       <>
         <Route path="/" element={<Layout />}>
-          <Route index path="" element={<Home/>} />
-         
+          <Route index path="" element={<Home />} />
 
           <Route path="" element={<PrivateRouter />}>
             <Route path="/profile" element={<Profile />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/users" element={<Users />} />
-            <Route path="/messages" element={<Messages/>} />
+            <Route path="/messages" element={<Messages />} />
             <Route path="/notifications" element={<>Notifications</>} />
-            <Route path="/friends" element={<FriendsPage/>} />
+            <Route path="/friends" element={<FriendsPage />} />
           </Route>
 
           <Route path="/admin" element={<AdminRouter />}>
-           
             <Route path="/admin/generator" element={<WordGeneratorPage />} />
             <Route path="/admin/generator/:id" element={<SettingsPair />} />
           </Route>
-
-          <Route path="*" element={<>Not Found</>} />
         </Route>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+
         <Route path="" element={<PrivateRouter />}>
           <Route path="/practic/:id" element={<PracticWordsPage />} />
         </Route>
+        <Route path="" element={<ActivatedRouter />}>
+          <Route path="/activated/:userId" element={<Activated />} />
+        </Route>
+        <Route path="*" element={<>Not Found</>} />
       </>,
     ),
   )

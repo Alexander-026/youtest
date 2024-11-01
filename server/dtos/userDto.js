@@ -9,6 +9,7 @@ const userDto = (user) => {
     isAdmin: user.isAdmin,
     notifications: user.notifications,
     friends: user.friends,
+    emailStatus: user.emailStatus
   };
 };
 
